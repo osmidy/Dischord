@@ -23,7 +23,7 @@ import bisect
 
 
 class AudioController(object):
-    def __init__(self, song_path):
+    def __init__(self):
         super(AudioController, self).__init__()
         self.audio = Audio(2)
         self.mixer = Mixer()

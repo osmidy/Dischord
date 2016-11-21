@@ -23,7 +23,10 @@ from kivy.config import Config
 from random import random, randint, choice
 import numpy as np
 
+from leap.LeapHelper import *
 from LeapHand import *
+import Leap
+from Flame import Flame
 
 
 class Handler(InstructionGroup):
@@ -40,19 +43,26 @@ class Handler(InstructionGroup):
         self.enemy_info = [(0.0, (50.0,0.0,0.0), 0.05), (2.0, (50.0,3.14/2,0.0), 0.05)]
 
         self.enemies = []
-        self.player = LeapHand()
         self.background = Environment("background")
         self.foreground = Environment("foreground")
         self.leftHand = LeapHand(Color(1, 0, 0))
         self.rightHand = LeapHand(Color(0,0,1))
+        
+        h = Window.height / 8
+        w = Window.width / 12
+        self.flame1 = Flame((2*w, h))
+        self.flame2 = Flame((6*w, h))
+        self.flame3 = Flame((10*w, h))
+        
+        self.flames = [self.flame1, self.flame2, self.flame3]
 
 
         self.add(self.background)
         self.add_enemies_in_range(self.time, self.time+self.initialtime)
         self.add(self.foreground)
-        self.add(self.player)
         self.add(self.leftHand)
         self.add(self.rightHand)
+        self.add(self.flame1); self.add(self.flame2); self.add(self.flame3)
         
 
         
@@ -72,27 +82,32 @@ class Handler(InstructionGroup):
         self.time += dt
         
     def handleFrame(self, frame):
-        # Remove bublbles, readd if visbile
-        self.objects.remove(self.leftHand); self.objects.remove(self.rightHand)
-        self.leftHand.set_visible(False); self.rightHand.set_visible(False)
+        # Remove bublbles, read if visbile
+        if self.leftHand.isVisible:
+            self.leftHand.set_visible(False)
+        if self.rightHand.isVisible:
+            self.rightHand.set_visible(False)
         
         hands = frame.hands
         for hand in hands:
-            currentHand = self.leftHand if hand.is_left else self.rightHand
+            print "iteration"
+            currenthand = self.lefthand if hand.is_left else self.righthand
+            currenthand.set_hand(hand)
             
-            self.move_hand(hand, currentHand)
+            self.move_hand(hand, currenthand)
             
-            if currentHand.has_flame:
+            if currenthand.has_flame:
                 if hand.grab_strength < .1:
-                    currentHand.release_flame()
+                    currenthand.release_flame()
                 else:
-                    killed_enemy = self.flame_on_enemy(currentHand.grabbed_flame)
-                    if killed_enemy != None:
-                        killed_enemy.wasHit(currentHand.grabbed_flame.midi_pitch)
+                    killed_enemy = self.flame_on_enemy(currenthand.grabbed_flame)
+                    if killed_enemy != none:
+                        killed_enemy.washit(currenthand.grabbed_flame.midi_pitch)
             else:
+                print "flames: " + str(self.flames)
                 for flame in self.flames:
-                    if LeapHelper.point_is_hovered(hand, flame.get_pos()) and currentHand.hand_open and hand.grab_strength == 1.0:
-                        currentHand.grab_flame(flame)
+                    if leaphelper.point_is_hovered(hand, flame.get_pos()) and currenthand.hand_open and hand.grab_strength == 1.0:
+                        currenthand.grab_flame(flame)
             
     def move_hand(self, hand, currentHand):
         pos = LeapHelper.position_as_pixels(hand)
@@ -102,7 +117,6 @@ class Handler(InstructionGroup):
             
         if not checkBounds(*pos):
             currentHand.release_flame()
-            self.objects.remove(currentHand)
             currentHand.set_visible(False)
         else:
             currentHand.set_visible(True)
@@ -115,6 +129,7 @@ class Handler(InstructionGroup):
     ''' Return the enemy we've hit, if any'''
     def flame_on_enemy(flame):
         #TODO: make it use cylindrical coordinates
+        print "ENEMEIS: " + str(self.enemies)
         for e in self.enemies:
             minX, maxX, minY, maxY = e.get_bounding_box()
             x, y = flame.get_pos()

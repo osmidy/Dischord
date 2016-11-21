@@ -4,7 +4,7 @@ import math
 
 from kivy.core.window import Window
 
-sys.path.insert(0, "lib")
+#from lib.Leap import *
 import Leap
 
 '''

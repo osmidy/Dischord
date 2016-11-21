@@ -43,16 +43,16 @@ class Flame(InstructionGroup):
         self.color = Color(0,0,0)
         
         
-        def on_update(self, dt):
-            pass
-            
-        def set_pos(self, pos):
-            self.pos = pos
-            self.circle.set_cpos(pos)
-            
-        def reset_pos(self):
-            self.pos = self.orignal_pos
-            self.circle.set_cpos(self.pos)
-            
-        def get_pos(self):
-            return self.pos
+    def on_update(self, dt):
+        pass
+        
+    def set_pos(self, pos):
+        self.pos = pos
+        self.circle.set_cpos(pos)
+        
+    def reset_pos(self):
+        self.pos = self.orignal_pos
+        self.circle.set_cpos(self.pos)
+        
+    def get_pos(self):
+        return self.pos
