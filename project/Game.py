@@ -30,7 +30,6 @@ class Game(BaseWidget):
         super(Game, self).__init__()
 
 
-        self.audio_controller = AudioController()
         self.handler = Handler()
 
 

@@ -20,6 +20,8 @@ from kivy.graphics import Color, Ellipse, Rectangle
 from kivy.graphics import PushMatrix, PopMatrix, Translate, Scale, Rotate
 from kivy.config import Config
 
+from AudioController import *
+
 from random import random, randint, choice
 import numpy as np
 
@@ -33,6 +35,8 @@ class Handler(InstructionGroup):
     def __init__(self):
         super(Handler, self).__init__()
         
+        self.audio_controller = AudioController()
+        
         self.leapController = Leap.Controller()
 
         self.time = 0.0
@@ -40,7 +44,7 @@ class Handler(InstructionGroup):
 
         # List of all objects in the game to be drawn
         self.objects = []
-        self.enemy_info = [(0.0, (50.0,0.0,0.0), 0.05), (2.0, (50.0,3.14/2,0.0), 0.05)]
+        self.enemy_info = [(0.0, (50.0,0.0,0.0), 0.05, self.audio_controller.play_sfx), (2.0, (50.0,3.14/2,0.0), 0.05, self.audio_controller.play_sfx)]
 
         self.enemies = []
         self.background = Environment("background")
@@ -67,10 +71,16 @@ class Handler(InstructionGroup):
 
         
     def on_update(self):
-    	dt = kivyClock.frametime
+        dt = kivyClock.frametime
+        
+        kill_list = []
 
-    	for o in self.objects:
-    		o.on_update(dt)
+        for o in self.objects:
+            if o.on_update(dt) == False:
+                kill_list.append(o)
+                
+        for o in kill_list:
+            self.remove(o)
 
         self.add_enemies_in_range(self.time+self.initialtime, self.time+self.initialtime+dt)
         
@@ -90,8 +100,7 @@ class Handler(InstructionGroup):
         
         hands = frame.hands
         for hand in hands:
-            print "iteration"
-            currenthand = self.lefthand if hand.is_left else self.righthand
+            currenthand = self.leftHand if hand.is_left else self.rightHand
             currenthand.set_hand(hand)
             
             self.move_hand(hand, currenthand)
@@ -101,12 +110,11 @@ class Handler(InstructionGroup):
                     currenthand.release_flame()
                 else:
                     killed_enemy = self.flame_on_enemy(currenthand.grabbed_flame)
-                    if killed_enemy != none:
-                        killed_enemy.washit(currenthand.grabbed_flame.midi_pitch)
+                    if killed_enemy != None:
+                        killed_enemy.wasHit(currenthand.grabbed_flame.midi_pitch)
             else:
-                print "flames: " + str(self.flames)
                 for flame in self.flames:
-                    if leaphelper.point_is_hovered(hand, flame.get_pos()) and currenthand.hand_open and hand.grab_strength == 1.0:
+                    if LeapHelper.point_is_hovered(hand, flame.get_pos()) and currenthand.hand_open and hand.grab_strength == 1.0:
                         currenthand.grab_flame(flame)
             
     def move_hand(self, hand, currentHand):
@@ -127,9 +135,8 @@ class Handler(InstructionGroup):
                 currentHand.set_visible(True)
                 
     ''' Return the enemy we've hit, if any'''
-    def flame_on_enemy(flame):
+    def flame_on_enemy(self, flame):
         #TODO: make it use cylindrical coordinates
-        print "ENEMEIS: " + str(self.enemies)
         for e in self.enemies:
             minX, maxX, minY, maxY = e.get_bounding_box()
             x, y = flame.get_pos()
@@ -137,7 +144,7 @@ class Handler(InstructionGroup):
             if x >= minX and x <= maxX and y >= minY and y <= maxY:
                 return e
                 
-            return None
+        return None
 
     def add_enemies_in_range(self, start, end):
         for e in self.enemy_info:
@@ -151,3 +158,7 @@ class Handler(InstructionGroup):
     def add(self, obj):
         super(Handler, self).add(obj)
         self.objects.append(obj)
+        
+    def remove(self, obj):
+        super(Handler, self).remove(obj)
+        self.objects.remove(obj)

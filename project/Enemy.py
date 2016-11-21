@@ -42,7 +42,7 @@ class Enemy(InstructionGroup):
         self.add(self.body)
 
         self.isResolved = False
-        self.note_needed = 69 #could use a list if multiple notes are needed in future iterations
+        self.note_needed = 60 #could use a list if multiple notes are needed in future iterations
 
 
     def wasHit(self, hit_note):
