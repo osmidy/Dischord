@@ -46,7 +46,8 @@ class Enemy(InstructionGroup):
 
 
     def wasHit(self, hit_note):
-        self.play_note(hit_note)
+        if self.play_note:
+            self.play_note(hit_note)
         if hit_note == self.note_needed:
             self.isResolved = True
         

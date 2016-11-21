@@ -24,19 +24,24 @@ import math
 
 
 class Flame(InstructionGroup):
-    def __init__(self, time, pos, speed):
+    def __init__(self, pos):
         super(Flame, self).__init__()
         
         # TODO: This will be a particle. Use circle for MS1
         self.pos = pos
         self.orignal_pos = pos
         
-        # TODO: add sound note for contact
+        # TODO: make these args, label flame with note
+        self.midi_pitch = 60
+        self.note_name = "C"
         
         self.color = Color(1, .65, 0) # Orange
         self.add(self.color)
         
-        self.circle = CEllipse(cpos = pos, size = (50, 50)) # radius = 50
+        self.circle = CEllipse(cpos = pos, size = (50, 50)) # radius = 25
+        self.add(self.circle)
+        self.color = Color(0,0,0)
+        
         
         def on_update(self, dt):
             pass

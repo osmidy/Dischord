@@ -139,7 +139,7 @@ class MainWidget(BaseWidget) :
         if not checkBounds(*pos):
             handBubble.release_flame()
             self.objects.remove(handBubble)
-            handBubble.isDrawn = True
+            handBubble.isDrawn = False
         else:
             if hand.is_left:
                 self.leftHandBubble.set_pos(pos)
