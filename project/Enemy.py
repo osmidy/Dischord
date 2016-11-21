@@ -39,8 +39,16 @@ class Enemy(InstructionGroup):
         self.body = CRectangle(pos=self.pos2D, size=(self.size, self.size))
         self.add(self.body)
 
+        self.isResolved = False
+        self.note_needed = 69 #could use a list if multiple notes are needed in future iterations
+
+
+    def wasHit(self, hit_note):
+        if hit_note == self.note_needed:
+            self.isResolved = True
         
     def on_update(self, dt):
+        # move enemy in negative r direction (towards the player)
         r = self.pos3D[0]
         if r>=0:
             self.pos3D = [r-self.speed, self.pos3D[1], self.pos3D[2]]
@@ -48,7 +56,10 @@ class Enemy(InstructionGroup):
             
             self.body.set_cpos(self.pos2D)
             self.body.set_csize((self.size,self.size))
-        # enemy should move closer in r direction, then call trans funct to get pos2D
+        
+        # return false if resolved
+        if self.isResolved:
+            return False
         
     # transform 3D cyl coord to screen pos
     def transform(self):
