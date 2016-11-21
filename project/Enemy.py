@@ -24,13 +24,15 @@ import math
 
 
 class Enemy(InstructionGroup):
-    def __init__(self, time, spawn_pos, speed):
+    def __init__(self, time, spawn_pos, speed, audio_callback=None):
         super(Enemy, self).__init__()
 
         # spawn pos is a 3d coord tuple in cylindrical coords: r,theta,z
         self.pos3D = spawn_pos
         self.pos2D = self.transform()
         self.speed = speed
+
+        self.play_note = audio_callback
 
         self.size = 20
 
@@ -44,6 +46,7 @@ class Enemy(InstructionGroup):
 
 
     def wasHit(self, hit_note):
+        self.play_note(hit_note)
         if hit_note == self.note_needed:
             self.isResolved = True
         
@@ -56,10 +59,15 @@ class Enemy(InstructionGroup):
             
             self.body.set_cpos(self.pos2D)
             self.body.set_csize((self.size,self.size))
-        
+
         # return false if resolved
         if self.isResolved:
             return False
+
+    def get_bounding_box(self):
+        # TODO: CHANGE THIS FUNCTION TO RETURN VALUES IN CYLINDRICAL COORD.S!!
+        s = self.size
+        return (self.pos2D[0]-s/2, self.pos2D[0]+s/2, self.pos2D[1]-s/2, self.pos2D[1]+s/2)
         
     # transform 3D cyl coord to screen pos
     def transform(self):
