@@ -1,5 +1,3 @@
-# pset3.py
-
 import sys
 sys.path.append('..')
 from common.core import *
