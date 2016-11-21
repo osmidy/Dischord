@@ -71,6 +71,7 @@ class Handler(InstructionGroup):
 
         
     def on_update(self):
+        self.audio_controller.on_update()
         dt = kivyClock.frametime
         
         kill_list = []
@@ -112,6 +113,7 @@ class Handler(InstructionGroup):
                     killed_enemy = self.flame_on_enemy(currenthand.grabbed_flame)
                     if killed_enemy != None:
                         killed_enemy.wasHit(currenthand.grabbed_flame.midi_pitch)
+                        self.enemies.remove(killed_enemy)
             else:
                 for flame in self.flames:
                     if LeapHelper.point_is_hovered(hand, flame.get_pos()) and currenthand.hand_open and hand.grab_strength == 1.0:
