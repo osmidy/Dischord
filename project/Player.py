@@ -26,10 +26,12 @@ class Player(InstructionGroup):
     def __init__(self):
         super(Player, self).__init__()
 
-        self.body_color = Color(1,1,1)
-        self.add(self.body_color)
-        self.body = Rectangle(pos=(Window.width/2-20,0), size=(40,40))
-        self.add(self.body)
+        self.LHand_color = Color(1,1,1)
+        self.RHand_color = Color(1,1,1)
+        self.LHand = CEllipse(cpos=pos, csize=(40,40), segments=30)
+        
+        self.LHand_pos = (0,0)
+        self.RHand_pos = (0.0)
 
         
     def on_update(self, dt):

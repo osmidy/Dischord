@@ -12,6 +12,7 @@ from common.writer import *
 from Enemy import *
 from Environment import *
 from Player import *
+from LeapHand import *
 
 from kivy.core.window import Window
 from kivy.clock import Clock as kivyClock
@@ -38,7 +39,7 @@ class Handler(InstructionGroup):
         self.enemy_info = [(0.0, (50.0,0.0,0.0), 0.05), (2.0, (50.0,3.14/2,0.0), 0.05)]
 
         self.enemies = []
-        self.player = Player()
+        self.player = LeapHand()
         self.background = Environment("background")
         self.foreground = Environment("foreground")
 
