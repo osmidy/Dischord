@@ -52,10 +52,10 @@ class MainWidget(BaseWidget) :
         self.mixer = Mixer()
         self.audio.set_generator(self.mixer)
         
-        self.leftHand = HandBubble((20, 20), 20, Color(1, 0, 0))
-        self.rightHand = HandBubble((20, 20), 20, Color(1, 1, 0))
+        self.leftHandBubble = HandBubble((20, 20), 20, Color(1, 0, 0))
+        self.rightHandBubble = HandBubble((20, 20), 20, Color(1, 1, 0))
         self.centerMarker = HandBubble((Window.width / 2, Window.height / 2), 30, Color(0, 0, 1))
-        self.objects.add(self.leftHand); self.objects.add(self.rightHand); self.objects.add(self.centerMarker)
+        self.objects.add(self.leftHandBubble); self.objects.add(self.rightHandBubble); self.objects.add(self.centerMarker)
         
         # Mock flames
         h = Window.height / 8
@@ -105,33 +105,46 @@ class MainWidget(BaseWidget) :
             self.handleFrame(frame)
         
     def handleFrame(self, frame):
+        # Remove bubbles; re-add later if appropriate hand is present
+        self.objects.remove(self.leftHandBubble)
+        self.objects.remove(self.rightHandBubble)
+        self.leftHandBubble.isDrawn = False
+        self.rightHandBubble.isDrawn = False
+        
         hands = frame.hands
         
         for hand in hands:
-            print hand.grab_strength
-            handPos = self.move_hand(hand)
+            handBubble = self.leftHandBubble if hand.is_left else self.rightHandBubble
+            if not handBubble.isDrawn:
+                self.objects.add(handBubble)
+                handBubble.isDrawn = True
+            handPos = self.move_hand(hand, handBubble)
             
-            handBubble = self.leftHand if hand.is_left else self.rightHand
             if handBubble.has_flame:
-                if hand.grab_strength < .2:
+                if hand.grab_strength < .1:
                     handBubble.release_flame()
             else:
                 for flame in self.flames:
-                    if LeapHelper.point_is_hovered(hand, flame.get_pos()) and hand.grab_strength == 1.0:
+                    if LeapHelper.point_is_hovered(hand, flame.get_pos()) and handBubble.handOpen and hand.grab_strength == 1.0:
                         # TODO: in actual code, make sure flames know original pos, track grab
                         handBubble.grab_flame(flame)
             
     
-    def move_hand(self, hand):
+    def move_hand(self, hand, handBubble):
         pos = LeapHelper.position_as_pixels(hand)
         
         def checkBounds(x, y):
             return 0 <= x and x <= Window.width and 0 <= y and y <= Window.height
-        
-        if hand.is_left:
-            self.leftHand.set_pos(pos)
+            
+        if not checkBounds(*pos):
+            handBubble.release_flame()
+            self.objects.remove(handBubble)
+            handBubble.isDrawn = True
         else:
-            self.rightHand.set_pos(pos)
+            if hand.is_left:
+                self.leftHandBubble.set_pos(pos)
+            else:
+                self.rightHandBubble.set_pos(pos)
         return pos
     
     def on_key_down(self, keycode, modifiers):
@@ -230,10 +243,13 @@ class HandBubble(InstructionGroup):
         center_x = Window.width/2
         center_y = Window.height/2
         
+        self.isDrawn = True # Is it currently visible on the canvas?
+        
         self.pos = pos
         
         self.has_flame = False
         self.grabbed_flame = None
+        self.handOpen = True
         
         # Duration of the bubble animation and its corresponding note
         self.duration = duration
@@ -269,12 +285,14 @@ class HandBubble(InstructionGroup):
             self.grabbed_flame = flame
             self.has_flame = True
             self.grabbed_flame.set_pos(self.pos)
+            self.handOpen = False
             
     def release_flame(self):
         if self.has_flame:
             self.grabbed_flame.reset_pos()
             self.has_flame = False
             self.grabbed_flame = None
+            self.handOpen = True
         
 class Flame(InstructionGroup):
     def __init__(self, pos, r, color, segments = 40, duration=1.5):
