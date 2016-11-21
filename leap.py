@@ -57,6 +57,16 @@ class MainWidget(BaseWidget) :
         self.centerMarker = HandBubble((Window.width / 2, Window.height / 2), 30, Color(0, 0, 1))
         self.objects.add(self.leftHand); self.objects.add(self.rightHand); self.objects.add(self.centerMarker)
         
+        # Mock flames
+        h = Window.height / 8
+        w = Window.width / 12
+        self.flame1 = Flame((2*w, h), 25, Color(1, .65, 0))
+        self.flame2 = Flame((6*w, h), 25, Color(1, .65, 0))
+        self.flame3 = Flame((10*w, h), 25, Color(1, .65, 0))
+        self.objects.add(self.flame1); self.objects.add(self.flame2); self.objects.add(self.flame3)
+        
+        self.flames = [self.flame1, self.flame2, self.flame3]
+        
         self.timbre = "sine"
         self.timbre_map = {"sine": NoteGenerator.sine, "square": NoteGenerator.square, "sawtooth": NoteGenerator.saw, \
                             "triangle": NoteGenerator.tri, "steelpan": NoteGenerator.square}
@@ -95,26 +105,34 @@ class MainWidget(BaseWidget) :
             self.handleFrame(frame)
         
     def handleFrame(self, frame):
-        ibox = frame.interaction_box
-        
         hands = frame.hands
         
         for hand in hands:
-            self.move_hand(hand)           
+            print hand.grab_strength
+            handPos = self.move_hand(hand)
+            
+            handBubble = self.leftHand if hand.is_left else self.rightHand
+            if handBubble.has_flame:
+                if hand.grab_strength < .2:
+                    handBubble.release_flame()
+            else:
+                for flame in self.flames:
+                    if LeapHelper.point_is_hovered(hand, flame.get_pos()) and hand.grab_strength == 1.0:
+                        # TODO: in actual code, make sure flames know original pos, track grab
+                        handBubble.grab_flame(flame)
             
     
     def move_hand(self, hand):
-        pos = LeapHelper.position_as_pixels(hand.palm_position.x, hand.palm_position.y)
+        pos = LeapHelper.position_as_pixels(hand)
         
         def checkBounds(x, y):
             return 0 <= x and x <= Window.width and 0 <= y and y <= Window.height
         
         if hand.is_left:
-            print "MOVE LEFT"
             self.leftHand.set_pos(pos)
-        else: #if checkBounds(*pos):
-            print "MOVE RIGHT"
+        else:
             self.rightHand.set_pos(pos)
+        return pos
     
     def on_key_down(self, keycode, modifiers):
     
@@ -212,6 +230,11 @@ class HandBubble(InstructionGroup):
         center_x = Window.width/2
         center_y = Window.height/2
         
+        self.pos = pos
+        
+        self.has_flame = False
+        self.grabbed_flame = None
+        
         # Duration of the bubble animation and its corresponding note
         self.duration = duration
         
@@ -228,6 +251,65 @@ class HandBubble(InstructionGroup):
         pass
         
     def set_pos(self, pos):
+        self.pos = pos
         self.shape.set_cpos(pos)
+        
+        if self.has_flame:
+            self.move_flame()
+        
+    def get_pos(self):
+        return self.pos
+        
+    def move_flame(self):
+        if self.has_flame:
+            self.grabbed_flame.set_pos(self.pos)
+            
+    def grab_flame(self, flame):
+        if not self.has_flame:
+            self.grabbed_flame = flame
+            self.has_flame = True
+            self.grabbed_flame.set_pos(self.pos)
+            
+    def release_flame(self):
+        if self.has_flame:
+            self.grabbed_flame.reset_pos()
+            self.has_flame = False
+            self.grabbed_flame = None
+        
+class Flame(InstructionGroup):
+    def __init__(self, pos, r, color, segments = 40, duration=1.5):
+        super(Flame, self).__init__()
+
+        center_x = Window.width/2
+        center_y = Window.height/2
+        
+        self.pos = pos
+        self.original_pos = pos
+        
+        # Duration of the bubble animation and its corresponding note
+        self.duration = duration
+        
+        self.color = color
+        self.add(self.color)
+    
+        self.shape = CEllipse(cpos = pos, size = (2*r, 2*r), segments = segments)
+        self.add(self.shape)
+
+        self.time = 0
+        self.on_update(0)
+
+    def on_update(self, dt):
+        pass
+        
+    def set_pos(self, pos):
+        self.pos = pos
+        self.shape.set_cpos(pos)
+        
+    def reset_pos(self):
+        self.pos = self.original_pos
+        self.shape.set_cpos(self.pos)
+        
+    def get_pos(self):
+        return self.pos
         
 run(eval('MainWidget'))
