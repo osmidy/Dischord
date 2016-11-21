@@ -10,6 +10,7 @@ from common.wavesrc import *
 from common.writer import *
 
 from Handler import *
+from AudioController import *
 
 from kivy.core.window import Window
 from kivy.clock import Clock as kivyClock
@@ -29,10 +30,7 @@ class Game(BaseWidget):
         super(Game, self).__init__()
 
 
-
-
-
-        #self.audio_controller = AudioController()
+        self.audio_controller = AudioController()
         self.handler = Handler()
 
 
