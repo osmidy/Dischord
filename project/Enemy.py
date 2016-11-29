@@ -9,8 +9,6 @@ from common.wavegen import *
 from common.wavesrc import *
 from common.writer import *
 
-from Texture import *
-
 from kivy.core.window import Window
 from kivy.clock import Clock as kivyClock
 from kivy.uix.label import Label
@@ -41,7 +39,7 @@ class Enemy(InstructionGroup):
 
         
     def on_update(self, dt):
-
+        pass
 
 
     def map(self, x, in_min, in_max, out_min, out_max):

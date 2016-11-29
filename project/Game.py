@@ -23,18 +23,13 @@ from kivy.config import Config
 from random import random, randint, choice
 import numpy as np
 
-
-
 class Game(BaseWidget):
     def __init__(self):
         super(Game, self).__init__()
 
-
         self.handler = Handler()
-
-
         self.canvas.add(self.handler)
-
+        self.add_widget(self.handler.get_flame())
 
     def on_touch_down(self, touch):
         pass
@@ -44,13 +39,5 @@ class Game(BaseWidget):
 
     def on_update(self):
     	self.handler.on_update()
-
-
-
-
-
-
-
-
 
 run(Game)

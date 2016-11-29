@@ -27,7 +27,6 @@ import numpy as np
 
 from leap.LeapHelper import *
 from LeapHand import *
-import Leap
 from Flame import Flame
 
 
@@ -36,8 +35,6 @@ class Handler(InstructionGroup):
         super(Handler, self).__init__()
         
         self.audio_controller = AudioController()
-        
-        self.leapController = Leap.Controller()
 
         self.time = 0.0
         self.initialtime = 3.0
@@ -48,8 +45,7 @@ class Handler(InstructionGroup):
         self.enemies = []
         self.background = Environment("background")
         self.foreground = Environment("foreground")
-        self.leftHand = LeapHand(Color(1, 0, 0))
-        self.rightHand = LeapHand(Color(0,0,1))
+        self.player = Player()
         
         
         self.flames = []
@@ -58,10 +54,7 @@ class Handler(InstructionGroup):
         self.add(self.background)
         self.add_enemies_in_range(self.time, self.time+self.initialtime)
         self.add(self.foreground)
-        self.add(self.leftHand)
-        self.add(self.rightHand)
-        self.add(self.flame1); self.add(self.flame2); self.add(self.flame3)
-        
+        self.add(self.player)        
 
         
     def on_update(self):
@@ -77,41 +70,12 @@ class Handler(InstructionGroup):
         for o in kill_list:
             self.remove(o)
 
+        self.crosshair_on_enemy()
+
         self.add_enemies_in_range(self.time+self.initialtime, self.time+self.initialtime+dt)
-        
-        if self.leapController.is_connected:
-            frame = self.leapController.frame()
-            self.handleFrame(frame)
 
 
         self.time += dt
-        
-    def handleFrame(self, frame):
-        # Remove bublbles, read if visbile
-        if self.leftHand.isVisible:
-            self.leftHand.set_visible(False)
-        if self.rightHand.isVisible:
-            self.rightHand.set_visible(False)
-        
-        hands = frame.hands
-        for hand in hands:
-            currenthand = self.leftHand if hand.is_left else self.rightHand
-            currenthand.set_hand(hand)
-            
-            self.move_hand(hand, currenthand)
-            
-            if currenthand.has_flame:
-                if hand.grab_strength < .1:
-                    currenthand.release_flame()
-                else:
-                    killed_enemy = self.flame_on_enemy(currenthand.grabbed_flame)
-                    if killed_enemy != None:
-                        killed_enemy.wasHit(currenthand.grabbed_flame.midi_pitch)
-                        self.enemies.remove(killed_enemy)
-            else:
-                for flame in self.flames:
-                    if LeapHelper.point_is_hovered(hand, flame.get_pos()) and currenthand.hand_open and hand.grab_strength == 1.0:
-                        currenthand.grab_flame(flame)
             
     def move_hand(self, hand, currentHand):
         pos = LeapHelper.position_as_pixels(hand)
@@ -130,26 +94,20 @@ class Handler(InstructionGroup):
                 self.objects.add(currentHand)
                 currentHand.set_visible(True)
                 
-    ''' Return the enemy we've hit, if any'''
-    def flame_on_enemy(self, flame):
-        #TODO: make it use cylindrical coordinates
-        for e in self.enemies:
-            minX, maxX, minY, maxY = e.get_bounding_box()
-            x, y = flame.get_pos()
-            
-            if x >= minX and x <= maxX and y >= minY and y <= maxY:
-                return e
-                
-        return None
+    ''' Return the enemies we've hit, if any'''
+    def crosshair_on_enemy(self):
+        # TODO: find points in some bounding box of the enemy
+        pass
 
     def add_enemies_in_range(self, start, end):
-        for e in self.enemy_info:
+        for e in self.enemies:
             if e[0] >= start and e[0] < end:
             	enemy = Enemy(*e)
                 self.enemies.append(enemy)
                 self.add(enemy)
 
-
+    def get_flame(self):
+        return self.player.get_flame()
 
     def add(self, obj):
         super(Handler, self).add(obj)
