@@ -26,7 +26,15 @@ class Foreground(InstructionGroup):
     def __init__(self):
         super(Foreground, self).__init__()
 
-        
+        w = Window.width
+        h = Window.height
+
+        # Draw Wall
+        # TODO: use a wall texture (find image online) instead of a solid brown color
+        self.wall_color = Color(0.5,0.3,0.1)
+        self.wall_rect = Rectangle(pos=(0,0), size=(w,h*0.2))
+        self.add(self.wall_color
+        self.add(self.wall_rect)
 
         
     def on_update(self, dt):

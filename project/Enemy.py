@@ -9,8 +9,6 @@ from common.wavegen import *
 from common.wavesrc import *
 from common.writer import *
 
-from Texture import *
-
 from kivy.core.window import Window
 from kivy.clock import Clock as kivyClock
 from kivy.uix.label import Label
@@ -26,22 +24,74 @@ import math
 
 
 class Enemy(InstructionGroup):
-    def __init__(self, spawn_pos, speed, audio_callback=None):
+    def __init__(self, spawn_pos, speed=None, audio_callback=None):
         super(Enemy, self).__init__()
 
-        # pos is 3D cartesian coords
-        self.pos = spawn_pos
+        # pos3D is 3D cartesian coords
+        self.pos3D = spawn_pos
+        # pos2D is for actual position on screen
+        self.pos2D = self.convert_to_pos2D(self.pos3D)
 
-        # list of textures for different animation states
+        self.size = np.array((100,300))
+
+
+        #---------#
+        # Visuals #
+        #---------#
+
+        self.color = Color(1,0.1,0.1)
+        self.rect = Rectangle(pos=(self.pos2D), size=(*(self.size*self.scale_with_z())))
+        self.add(self.color)
+        self.add(rect)
+
+        
+
+        # TODO: list of textures for different animation states
         # TODO: eventually replace with textures
-        self.textures = []
-        self.textures.append(Texture())
+        # self.texture = Image(source='find_a_picture.png').texture
+        # self.rect = Rectangle(texture=self.texture, pos=(0,0), size=(100,100))
 
+        #-------#
+        # Audio #
+        #-------#
+        
+        self.notes = [79,84,86] #G5, C6, D6
 
 
         
     def on_update(self, dt):
+        self.change3D(0, 0, 5.0)
 
+
+
+    def change3D(self, a, b, c):
+        self.pos3D = (self.pos3D[0] + a, self.pos3D[1] + b, self.pos3D[2] + c)
+        self.pos2D = self.convert_to_pos2D(self.pos3D)
+        self.rect.pos = self.pos2D
+        self.rect.size = (*(self.size*self.scale_with_z()))
+
+
+    def scale_with_z(self, z=None):
+        if z == None:
+            z = self.pos3D[2]
+        D = 500.0   # D should be the abs value of most negative z for enemies to spawn at
+        # note: z is negative for values in the field for enemies, with player at z=0
+        return 2*z/(3*D) + 1.0
+
+
+    def convert_to_pos2D(self, pos3D):
+        D = 500.0
+        Y = Window.height*0.6
+        X = Window.width
+        x = pos3D[0]
+        y = pos3D[1]
+        z = pos3D[2]
+
+        j = -Y/(D*D) * (z+D)*(z+D) + Y
+        c = self.map(j, 0, Y, 1, 1/3)
+        i = self.map(x+X/2, 0, X, X/2*(1-c), X/2*(1+c))
+
+        return (i,j)
 
 
     def map(self, x, in_min, in_max, out_min, out_max):
