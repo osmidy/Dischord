@@ -9,8 +9,6 @@ from common.wavegen import *
 from common.wavesrc import *
 from common.writer import *
 
-from Enemy import *
-from Environment import *
 from Player import *
 from kivy.core.window import Window
 from kivy.clock import Clock as kivyClock

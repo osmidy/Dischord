@@ -29,12 +29,15 @@ class Moon(InstructionGroup):
 		super(Moon, self).__init__()
 
 		self.texture = Image(source='moon.png').texture
-		self.rect = CRectangle(texture=self.texture, cpos=(Window.width/2,Window.height-70), csize=(64,64))
+		self.rect = CRectangle(texture=self.texture, cpos=(Window.width/2,Window.height-40), csize=(64,64))
+		self.add(Color(0.7,0.7,0.6))
+		self.add(self.rect)
+		
 
 		# TODO: maybe also draw a letter (signifying key of level) onto the moon
 
 
-	def on_update(self,dt):
+	def on_update(self, dt):
 		# moon should move across the sky as level progresses
 		pass
 
@@ -43,7 +46,7 @@ class Sun(InstructionGroup):
 		super(Sun, self).__init__()
 		pass
 
-	def on_update(self,dt):
+	def on_update(self, dt):
 		pass
 
 class Backdrop(InstructionGroup):
@@ -52,12 +55,38 @@ class Backdrop(InstructionGroup):
 
 		self.texture = Image(source='forest.png').texture
 		self.rect = Rectangle(texture=self.texture, pos=(0,Window.height*0.6), size=(Window.width,Window.height*0.4))
+		self.add(Color(0.1,0.3,0.3))
+		self.add(self.rect)
 
 		# TODO: add functionality to have different, interchangeable backdrops
 
 
-	def on_update(self,dt):
+	def on_update(self, dt):
 		# moon should move across the sky as level progresses
+		pass
+
+class Ground(InstructionGroup):
+	def __init__(self):
+		super(Ground, self).__init__()
+
+		self.texture = Image(source='grass.png').texture
+		self.rect = Rectangle( texture=self.texture, pos=(0,0), size=(Window.width,Window.height*0.6) )
+		self.add(Color(0.05,0.2,0.5))
+		self.add(self.rect)
+
+	def on_update(self, dt):
+		pass
+
+class Sky(InstructionGroup):
+	def __init__(self):
+		super(Sky, self).__init__()
+
+		self.texture = Image(source='sky.png').texture
+		self.rect = Rectangle( texture=self.texture, pos=(0,Window.height*0.6), size=(Window.width,Window.height*(1-0.6)) )
+		self.add(Color(0.2,0.1,0.2))
+		self.add(self.rect)
+
+	def on_update(self, dt):
 		pass
 
 
@@ -69,15 +98,11 @@ class Background(InstructionGroup):
         h = Window.height
 
         # Draw Ground and Sky Rectangles
-        self.ground_color = Color(0.1,1.0,0.2)
-        self.ground_rect = Rectangle(pos=(0,0), size=(w,h*0.6))
-        self.add(self.ground_color)
-        self.add(self.ground_rect)
+        self.ground = Ground()
+        self.add(self.ground)
 
-        self.sky_color = Color(0.0,0.0,0.3)
-        self.sky_rect = Rectangle(pos=(0,h*0.6), size=(w,h-h*0.6))
-        self.add(self.sky_color)
-        self.add(self.sky_rect)
+        self.sky = Sky()
+        self.add(self.sky)
 
         # Draw Sun and Moon
         self.moon = Moon()
@@ -92,5 +117,6 @@ class Background(InstructionGroup):
 
         
     def on_update(self, dt):
-        pass
+        # As of now, should never be removed
+        return True
 

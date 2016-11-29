@@ -57,7 +57,7 @@ class CEllipse(Ellipse):
     cpos = property(get_cpos, set_cpos)
     csize = property(get_csize, set_csize)
 
-
+# Rectangle with origin at center
 class CRectangle(Rectangle):
     def __init__(self, **kwargs):
         super(CRectangle, self).__init__(**kwargs)
@@ -83,6 +83,33 @@ class CRectangle(Rectangle):
 
     cpos = property(get_cpos, set_cpos)
     csize = property(get_csize, set_csize)
+
+# Retangle with origin at center of bottom side
+class CBRectangle(Rectangle):
+    def __init__(self, **kwargs):
+        super(CBRectangle, self).__init__(**kwargs)
+        if kwargs.has_key('cbpos'):
+            self.cbpos = kwargs['cbpos']
+
+        if kwargs.has_key('cbsize'):
+            self.cbsize = kwargs['cbsize']
+
+    def get_cbpos(self):
+        return (self.pos[0] + self.size[0]/2, self.pos[1])
+
+    def set_cbpos(self, p):
+        self.pos = (p[0] - self.size[0]/2 , p[1])
+
+    def get_cbsize(self) :
+        return self.size
+
+    def set_cbsize(self, p) :
+        cbpos = self.get_cbpos()
+        self.size = p
+        self.set_cbpos(cbpos)
+
+    cbpos = property(get_cbpos, set_cbpos)
+    cbsize = property(get_cbsize, set_cbsize)
 
 
 # KeyFrame Animation class

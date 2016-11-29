@@ -10,7 +10,8 @@ from common.wavesrc import *
 from common.writer import *
 
 from Enemy import *
-from Environment import *
+from Background import *
+from Foreground import *
 from Player import *
 from kivy.core.window import Window
 from kivy.clock import Clock as kivyClock
@@ -43,8 +44,8 @@ class Handler(InstructionGroup):
         self.objects = []
 
         self.enemies = []
-        self.background = Environment("background")
-        self.foreground = Environment("foreground")
+        self.background = Background()
+        self.foreground = Foreground()
         self.player = Player()
         
         
@@ -52,7 +53,10 @@ class Handler(InstructionGroup):
 
 
         self.add(self.background)
-        self.add_enemies_in_range(self.time, self.time+self.initialtime)
+        e = Enemy(0)
+        self.enemies.append(e)
+        self.add(e)
+        # self.add_enemies_in_range(self.time, self.time+self.initialtime)
         self.add(self.foreground)
         self.add(self.player)        
 
@@ -72,7 +76,7 @@ class Handler(InstructionGroup):
 
         self.crosshair_on_enemy()
 
-        self.add_enemies_in_range(self.time+self.initialtime, self.time+self.initialtime+dt)
+        # self.add_enemies_in_range(self.time+self.initialtime, self.time+self.initialtime+dt)
 
 
         self.time += dt
@@ -99,12 +103,12 @@ class Handler(InstructionGroup):
         # TODO: find points in some bounding box of the enemy
         pass
 
-    def add_enemies_in_range(self, start, end):
-        for e in self.enemies:
-            if e[0] >= start and e[0] < end:
-            	enemy = Enemy(*e)
-                self.enemies.append(enemy)
-                self.add(enemy)
+    # def add_enemies_in_range(self, start, end):
+    #     for e in self.enemies:
+    #         if e[0] >= start and e[0] < end:
+    #         	enemy = Enemy(*e)
+    #             self.enemies.append(enemy)
+    #             self.add(enemy)
 
     def get_flame(self):
         return self.player.get_flame()

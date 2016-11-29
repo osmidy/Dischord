@@ -21,18 +21,19 @@ from random import random, randint, choice
 import numpy as np
 
 import math
-
+D = 5000
 
 class Enemy(InstructionGroup):
-    def __init__(self, spawn_pos, speed=None, audio_callback=None):
+    def __init__(self, spawn_x, speed=None, audio_callback=None):
         super(Enemy, self).__init__()
 
         # pos3D is 3D cartesian coords
-        self.pos3D = spawn_pos
+        self.pos3D = [spawn_x,0,-D]
+
         # pos2D is for actual position on screen
         self.pos2D = self.convert_to_pos2D(self.pos3D)
 
-        self.size = np.array((100,300))
+        self.size = np.array((200,400))
 
 
         #---------#
@@ -40,9 +41,10 @@ class Enemy(InstructionGroup):
         #---------#
 
         self.color = Color(1,0.1,0.1)
-        self.rect = Rectangle(pos=(self.pos2D), size=(*(self.size*self.scale_with_z())))
+        s = self.size*self.scale_with_z()
+        self.rect = CBRectangle(cbpos=(self.pos2D), cbsize=(s[0],s[1]))
         self.add(self.color)
-        self.add(rect)
+        self.add(self.rect)
 
         
 
@@ -60,7 +62,9 @@ class Enemy(InstructionGroup):
 
         
     def on_update(self, dt):
-        self.change3D(0, 0, 5.0)
+        if self.pos3D[2] < 0:
+            self.change3D(0, 0, 20)
+
 
 
 
@@ -68,19 +72,25 @@ class Enemy(InstructionGroup):
         self.pos3D = (self.pos3D[0] + a, self.pos3D[1] + b, self.pos3D[2] + c)
         self.pos2D = self.convert_to_pos2D(self.pos3D)
         self.rect.pos = self.pos2D
-        self.rect.size = (*(self.size*self.scale_with_z()))
+        s = self.size*self.scale_with_z()
+        self.rect.size = (s[0],s[1])
 
 
     def scale_with_z(self, z=None):
         if z == None:
             z = self.pos3D[2]
-        D = 500.0   # D should be the abs value of most negative z for enemies to spawn at
+        #D = 500.0   # D should be the abs value of most negative z for enemies to spawn at
         # note: z is negative for values in the field for enemies, with player at z=0
-        return 2*z/(3*D) + 1.0
-
+        #return 2*z/(3*D) + 1.0
+        Y = Window.height*0.6
+        # magic numbers, as far as the eye can see!!!
+        c=  self.map(-Y/(D*D) * (z+D)*(z+D) + Y, 0.0, D/12.7, 1.0, 1/10)
+        print c
+        print z
+        return c
 
     def convert_to_pos2D(self, pos3D):
-        D = 500.0
+        #D = 500.0
         Y = Window.height*0.6
         X = Window.width
         x = pos3D[0]
