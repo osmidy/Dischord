@@ -25,9 +25,9 @@ import numpy as np
 import math
 
 
-class Enemy(InstructionGroup):
+class Player(InstructionGroup):
     def __init__(self, spawn_pos, speed, audio_callback=None):
-        super(Enemy, self).__init__()
+        super(Player, self).__init__()
 
         # pos is 3D cartesian coords
         self.pos = spawn_pos

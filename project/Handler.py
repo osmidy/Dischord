@@ -44,7 +44,6 @@ class Handler(InstructionGroup):
 
         # List of all objects in the game to be drawn
         self.objects = []
-        self.enemy_info = [(0.0, (50.0,0.0,0.0), 0.05, self.audio_controller.play_sfx), (2.0, (50.0,3.14/2,0.0), 0.05, self.audio_controller.play_sfx)]
 
         self.enemies = []
         self.background = Environment("background")
@@ -52,13 +51,8 @@ class Handler(InstructionGroup):
         self.leftHand = LeapHand(Color(1, 0, 0))
         self.rightHand = LeapHand(Color(0,0,1))
         
-        h = Window.height / 8
-        w = Window.width / 12
-        self.flame1 = Flame((2*w, h))
-        self.flame2 = Flame((6*w, h))
-        self.flame3 = Flame((10*w, h))
         
-        self.flames = [self.flame1, self.flame2, self.flame3]
+        self.flames = []
 
 
         self.add(self.background)
