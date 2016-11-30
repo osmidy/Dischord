@@ -17,6 +17,8 @@ from kivy.graphics import Color, Ellipse, Rectangle
 from kivy.graphics import PushMatrix, PopMatrix, Translate, Scale, Rotate
 from kivy.config import Config
 
+from MusicHelper import *
+
 from random import random, randint, choice
 import numpy as np
 
@@ -24,7 +26,7 @@ import math
 D = 1000
 
 class Enemy(InstructionGroup):
-    def __init__(self, spawn_x, speed=None, audio_callback=None):
+    def __init__(self, spawn_x, key = 'C', chord = 'I', speed=None, audio_callback=None):
         super(Enemy, self).__init__()
 
         # pos3D is 3D cartesian coords
@@ -58,11 +60,15 @@ class Enemy(InstructionGroup):
         # self.texture = Image(source='find_a_picture.png').texture
         # self.rect = Rectangle(texture=self.texture, pos=(0,0), size=(100,100))
 
-        #-------#
-        # Audio #
-        #-------#
+        #---------------#
+        # Audio & Music #
+        #---------------#
         
-        self.notes = [79,84,86] #G5, C6, D6
+        self.key = key
+        self.chord = chord
+        self.notes, self.correctNotes, self.correctionIndex = MusicHelper.get_dissonant_chord(self.key, self.chord)
+
+        self.audio_callback = audio_callback
 
 
         
@@ -74,6 +80,29 @@ class Enemy(InstructionGroup):
             return False
 
         return True
+
+    # Called when a crosshair first hovers over an enemy
+    def on_target(self):
+        pitches = MusicHelper.build_midi_chord(self.notes)
+        self.audio_callback(pitches)
+
+    # Called immediately before dying when an enemy is hit by a player
+    # Return True if successfully killed by the player, else False
+    def on_hit(self, note):
+        lowercaseNote = str(note)
+        comparisonNotes = self.notes[:self.correctionIndex] + lowercaseNote + self.notes[self.correctionIndex:]
+
+        killed = False
+
+        pitches = None
+        if comparisonNotes == self.correctNotes:
+            pitches = MusicHelper.build_midi_chord(self.correctNotes)
+            killed = True
+        else:
+            pitches = MusicHelper.build_midi_chord(self.notes)
+
+        self.audio_callback(pitches)
+        return killed
 
 
 
