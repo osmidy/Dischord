@@ -75,6 +75,6 @@ class Player(InstructionGroup):
     def get_health(self):
         return self.health
 
-    def decrement_health(self, c):
+    def decrement_health(self, c=10):
         self.health -= c
 
