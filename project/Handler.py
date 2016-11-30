@@ -43,7 +43,7 @@ class E_List(InstructionGroup):
         self.enemies.append(obj)
 
     def on_update(self, dt):
-        print len(self.enemies)
+        #print len(self.enemies)
         kill_list = []
         for e in self.enemies:
             if not e.on_update(dt):
@@ -121,7 +121,46 @@ class Handler(InstructionGroup):
     ''' Return the enemies we've hit, if any'''
     def crosshair_on_enemy(self):
         # TODO: find points in some bounding box of the enemy
-        pass
+        crosshair = self.player.leftHand.get_pos()
+        del_x = crosshair[0] - Window.width/2
+        del_y = crosshair[1]
+        A = (Window.width/2, 0)
+        B = (Window.width/2 + 3*del_x, 3*del_y)
+
+        line_of_sight = []
+        
+        for e in self.enemies.enemies:
+            x = e.cbrect.pos[0]
+            y = e.cbrect.pos[1]
+            w = e.cbrect.size[0]
+            h = e.cbrect.size[1]
+
+            pts = [(x,y),(x+w,y),(x+w,y+h),(x,y+h),(x,y)]
+
+            for i in xrange(3):
+                C = pts[i]
+                D = pts[i+1]
+
+                if self.intersect(A,B,C,D):
+                    line_of_sight.append(e)
+                    break
+
+            #e.un_lit()
+
+        for e in line_of_sight:
+            #e.lit()
+            pass
+
+
+
+
+    def ccw(self, A,B,C):
+        return (C[1]-A[1]) * (B[0]-A[0]) > (B[1]-A[1]) * (C[0]-A[0])
+
+    # Return true if line segments AB and CD intersect
+    def intersect(self, A,B,C,D):
+        return self.ccw(A,C,D) != self.ccw(B,C,D) and self.ccw(A,B,C) != self.ccw(A,B,D)
+
 
     def add_enemies(self, time):
         remove_list = []
