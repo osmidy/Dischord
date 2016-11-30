@@ -60,6 +60,13 @@ class Player(InstructionGroup):
 
     def get_flame(self):
         return self.rightHand.flameParticle
+
+    def is_attacking(self):
+        hand = self.rightHand.get_hand()
+        if not hand:
+            return False
+        y = hand.palm_normal.y
+        return abs(1 - y) <= .05
         
     def on_update(self, dt):
         if self.controller.is_connected:

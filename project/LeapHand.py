@@ -49,6 +49,9 @@ class LeapHand(InstructionGroup):
             
     def set_hand(self, hand):
         self.hand = hand
+
+    def get_hand(self):
+        return self.hand
         
     def set_visible(self, val):
         self.isVisible = val

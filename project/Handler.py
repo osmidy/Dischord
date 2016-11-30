@@ -97,6 +97,8 @@ class Handler(InstructionGroup):
 
         self.crosshair_on_enemy()
 
+        self.try_fire()
+
         self.add_enemies(self.time)
 
         self.time += dt
@@ -156,6 +158,11 @@ class Handler(InstructionGroup):
             if e != self.target:
                 e.un_lit()
                 e.set_is_targeted(False)
+
+    def try_fire(self):
+        if self.player.is_attacking() and self.target:
+            self.target.on_hit('c')
+
 
 
     def ccw(self, A,B,C):

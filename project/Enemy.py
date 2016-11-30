@@ -56,6 +56,8 @@ class Enemy(InstructionGroup):
         # If currently targeted by crosshair
         self.is_targeted = False
 
+        self.is_dead = False
+
         
 
         # TODO: list of textures for different animation states
@@ -81,6 +83,9 @@ class Enemy(InstructionGroup):
 
         
     def on_update(self, dt):
+        if self.is_dead:
+            return True
+
         if self.pos3D[2] < 0:
             s = dt*self.speed*50
             self.change3D(0, 0, s)
@@ -103,20 +108,18 @@ class Enemy(InstructionGroup):
     # Return True if successfully killed by the player, else False
     def on_hit(self, note):
         lowercaseNote = str(note)
-        comparisonNotes = self.notes[:self.correctionIndex] + lowercaseNote + self.notes[self.correctionIndex:]
-
-        killed = False
+        comparisonNotes = self.notes[:self.correctionIndex] + [lowercaseNote] + self.notes[self.correctionIndex:]
 
         pitches = None
         if comparisonNotes == self.correctNotes:
             pitches = MusicHelper.build_midi_chord(self.correctNotes)
-            killed = True
+            self.is_dead = True
         else:
             pitches = MusicHelper.build_midi_chord(self.notes)
 
         if self.audio_callback:
             self.audio_callback(pitches)
-        return killed
+        
 
     def set_is_targeted(self, val):
         self.is_targeted = val
