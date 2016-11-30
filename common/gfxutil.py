@@ -111,6 +111,33 @@ class CBRectangle(Rectangle):
     cbpos = property(get_cbpos, set_cbpos)
     cbsize = property(get_cbsize, set_cbsize)
 
+# Retangle with origin at center of bottom side
+class CRRectangle(Rectangle):
+    def __init__(self, **kwargs):
+        super(CRRectangle, self).__init__(**kwargs)
+        if kwargs.has_key('crpos'):
+            self.cbpos = kwargs['crpos']
+
+        if kwargs.has_key('crsize'):
+            self.cbsize = kwargs['crsize']
+
+    def get_crpos(self):
+        return (self.pos[0] + self.size[0], self.pos[1] + self.size[1]/2)
+
+    def set_crpos(self, p):
+        self.pos = (p[0] - self.size[0] , p[1] - self.size[1]/2)
+
+    def get_crsize(self) :
+        return self.size
+
+    def set_crsize(self, p) :
+        crpos = self.get_crpos()
+        self.size = p
+        self.set_crpos(crpos)
+
+    crpos = property(get_crpos, set_crpos)
+    crsize = property(get_crsize, set_crsize)
+
 
 # KeyFrame Animation class
 # initialize with an argument list where each arg is a keyframe.

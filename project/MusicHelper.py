@@ -6,12 +6,12 @@ and MIDI pitches
 '''
 class MusicHelper(object):
 
-    wholeStep = 12
+    octave = 12
 
     # TODO: mechanism for supporting other keys; enharmonic notes
     noteToMidi = {'c': 60, 'd': 62, 'e': 64, 'f': 65, 'g': 67, 'a': 69, 'b': 71}
 
-    majorChordToNotes = {"I": "ceg", "ii": "dfa", "iii": "egb", "IV": "fac", "V": "gbe", "VI": "ace", "vii": "bdf"}
+    majorChordToNotes = {"I": "ceg", "ii": "dfa", "iii": "egb", "IV": "fac", "V": "gbd", "VI": "ace", "vii": "bdf"}
 
     # TODO: better chord resolution
     '''
@@ -32,15 +32,15 @@ class MusicHelper(object):
         fifth = get_midi_pitch(notes[2])
 
         if third < root:
-            third += MusicHelper.wholeStep
+            third += MusicHelper.octave
         if fifth < root:
-            fifth += MusicHelper.wholeStep
+            fifth += MusicHelper.octave
 
         return [root, third, fifth]
 
     '''
     Return a string of notes for a chord, where one note is not
-    part of the actual chord. Returns the proper and dissonant chords,
+    part of the actual chord. Returns the dissonant and proper chords,
     eachh as a list of the notes in the chord in order, and the
     index of the wrong note.
     '''
@@ -52,14 +52,17 @@ class MusicHelper(object):
 
         pickedNote = random.choice(properChord)
 
-        wrongNote = None
-        while True:
-            wrongNote = random.choice(MusicHelper.noteToMidi.keys())
-            if wrongNote not in properChord:
-                break
+        # wrongNote = None
+        # while True:
+        #     wrongNote = random.choice(MusicHelper.noteToMidi.keys())
+        #     if wrongNote not in properChord:
+        #         break
 
-        noteIndex = properChord.index(pickedNote)
-        dissonantChord[noteIndex] = wrongNote
+        # noteIndex = properChord.index(pickedNote)
+        # dissonantChord[noteIndex] = wrongNote
 
-        return properChord, dissonantChord, noteIndex
+        dissonantChord = ['g', 'c', 'd']
+        noteIndex = 1
+
+        return dissonantChord, properChord, noteIndex
 

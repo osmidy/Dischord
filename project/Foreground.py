@@ -36,16 +36,17 @@ class Wall(InstructionGroup):
 		pass
 
 class Button(InstructionGroup):
-	def __init__(self, x, w, color):
-		super(Button, self).__init__()
+    def __init__(self, y, h, color):
+        super(Button, self).__init__()
 
-		self.color = color
-		self.cbrect = CBRectangle( cbpos=(x,0), cbsize=(w,50) )
-		self.add(self.color)
-		self.add(self.cbrect)
+        self.color = color
+        self.add(self.color)
 
-	def on_update(self,dt):
-		pass
+        self.crrect = CBRectangle( cbpos=(Window.width-50, y), cbsize=(50, h) )
+        self.add(self.crrect)
+
+    def on_update(self, dt):
+        pass
 
 
 
@@ -63,11 +64,13 @@ class Foreground(InstructionGroup):
         # Draw Buttons
         self.buttons = []
         num_buttons = 4
-        w = Window.width/num_buttons
+        height = Window.height*0.6
+        h = height/num_buttons
 
-        button_x_positions = np.linspace(w/2,Window.width-w/2,num_buttons)
+        button_y_positions = np.linspace(Window.height-height -  h/2, Window.height-h/2  , num_buttons)
+        print button_y_positions
         for i in xrange(num_buttons):
-        	b = Button(button_x_positions[i], w-20, Color(0.5,0.4,0.35))
+        	b = Button(button_y_positions[i], h-20, Color(0.5,0.4,0.35))
         	self.buttons.append(b)
         	self.add(b)
 

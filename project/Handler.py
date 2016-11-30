@@ -161,7 +161,7 @@ class Handler(InstructionGroup):
 
     def try_fire(self):
         if self.player.is_attacking() and self.target:
-            self.target.on_hit('c')
+            self.target.on_hit('b')
 
 
 

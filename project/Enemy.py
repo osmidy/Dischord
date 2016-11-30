@@ -26,7 +26,7 @@ import math
 D = 1000
 
 class Enemy(InstructionGroup):
-    def __init__(self, spawn_x, key = 'C', chord = 'I', speed=None, audio_callback=None):
+    def __init__(self, spawn_x, key = 'C', chord = 'V', speed=None, audio_callback=None):
         super(Enemy, self).__init__()
 
         # pos3D is 3D cartesian coords
@@ -84,7 +84,7 @@ class Enemy(InstructionGroup):
         
     def on_update(self, dt):
         if self.is_dead:
-            return True
+            return False
 
         if self.pos3D[2] < 0:
             s = dt*self.speed*50
@@ -108,7 +108,8 @@ class Enemy(InstructionGroup):
     # Return True if successfully killed by the player, else False
     def on_hit(self, note):
         lowercaseNote = str(note)
-        comparisonNotes = self.notes[:self.correctionIndex] + [lowercaseNote] + self.notes[self.correctionIndex:]
+        #comparisonNotes = self.notes[:self.correctionIndex] + [lowercaseNote] + self.notes[self.correctionIndex:]
+        comparisonNotes = ['g', 'b', 'd']
 
         pitches = None
         if comparisonNotes == self.correctNotes:
