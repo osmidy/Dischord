@@ -39,11 +39,10 @@ class E_List(InstructionGroup):
         self.enemies = []
 
     def add(self, obj):
-        super(E_List, self).add(obj)
-        self.enemies.append(obj)
+        super(E_List, self).insert(0,obj)
+        self.enemies.insert(0,obj)
 
     def on_update(self, dt):
-        #print len(self.enemies)
         kill_list = []
         for e in self.enemies:
             if not e.on_update(dt):
@@ -67,23 +66,24 @@ class Handler(InstructionGroup):
         # List of all objects in the game to be drawn
         self.objects = []
 
+        self.target = None
+
         self.enemies = E_List()
         self.background = Background()
         self.foreground = Foreground()
         self.player = Player()
-        
-        
+          
         self.flames = []
-
 
         self.add(self.background)
         self.add(self.enemies)
         self.add(self.foreground)
-        self.add(self.player)        
+        self.add(self.player)     
 
         
     def on_update(self):
         self.audio_controller.on_update()
+
         dt = kivyClock.frametime
         
         kill_list = []
@@ -123,37 +123,39 @@ class Handler(InstructionGroup):
         crosshair = self.player.leftHand.get_pos()
         del_x = crosshair[0] - Window.width/2
         del_y = crosshair[1]
-        A = (Window.width/2, 0)
+        A = (Window.width/2, -200)
         B = (Window.width/2 + 3*del_x, 3*del_y)
 
-        line_of_sight = []
+        self.target = None
+        sorted_enemies = sorted(self.enemies.enemies, key = lambda x: x.cbrect.pos[1])
         
-        for e in self.enemies.enemies:
+        for e in sorted_enemies:
             x = e.cbrect.pos[0]
             y = e.cbrect.pos[1]
             w = e.cbrect.size[0]
             h = e.cbrect.size[1]
 
             pts = [(x,y),(x+w,y),(x+w,y+h),(x,y+h),(x,y)]
+            cont = False
 
             for i in xrange(3):
                 C = pts[i]
                 D = pts[i+1]
 
                 if self.intersect(A,B,C,D):
-                    line_of_sight.append(e)
+                    e.lit()
+                    e.on_target()
+                    e.set_is_targeted(True)
+                    self.target = e
+                    cont = True
                     break
-                else:
-                    #e.un_lit()
-                    e.set_is_targeted(False)
+            if cont:
+                break
 
-        for e in line_of_sight:
-            #e.lit()
-            print e.get_is_targeted()
-            e.on_target()
-            e.set_is_targeted(True)
-
-
+        for e in sorted_enemies:
+            if e != self.target:
+                e.un_lit()
+                e.set_is_targeted(False)
 
 
     def ccw(self, A,B,C):

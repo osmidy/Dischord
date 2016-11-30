@@ -35,6 +35,14 @@ class Wall(InstructionGroup):
 	def on_update(self, dt):
 		pass
 
+class Button(InstructionGroup):
+	def __init__(self):
+		super(Wall, self).__init__()
+
+		#self.
+
+
+
 class Foreground(InstructionGroup):
     def __init__(self):
         super(Foreground, self).__init__()
@@ -45,6 +53,8 @@ class Foreground(InstructionGroup):
         # Draw Wall
         self.wall = Wall()
         self.add(self.wall)
+
+        # Draw
 
         
     def on_update(self, dt):
