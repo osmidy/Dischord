@@ -26,8 +26,10 @@ class Crosshair(LeapHand):
 
     def set_pos(self, pos):
         super(Crosshair, self).set_pos(pos)
-        print self.pos
         self.set_lines()
+
+    def get_pos(self):
+        return self.pos
 
     def set_lines(self):
         # We only allow horizontal movement of the crosshair,

@@ -105,7 +105,6 @@ class Enemy(InstructionGroup):
         return killed
 
 
-
     def change3D(self, a, b, c):
         self.pos3D = (self.pos3D[0] + a, self.pos3D[1] + b, self.pos3D[2] + c)
         self.pos2D = self.convert_to_pos2D(self.pos3D)
