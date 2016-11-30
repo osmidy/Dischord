@@ -30,6 +30,30 @@ from leap.LeapHelper import *
 from LeapHand import *
 from Flame import Flame
 
+data = [(0.0,0),(2.0,-250),(4.0,250),(6.0,-125),(10.0,0)]
+
+class E_List(InstructionGroup):
+    def __init__(self):
+        super(E_List, self).__init__()
+
+        self.enemies = []
+
+    def add(self, obj):
+        super(E_List, self).add(obj)
+        self.enemies.append(obj)
+
+    def on_update(self, dt):
+        print len(self.enemies)
+        kill_list = []
+        for e in self.enemies:
+            if not e.on_update(dt):
+                kill_list.append(e) 
+        for k in kill_list:
+            self.enemies.remove(k)
+            self.remove(k)
+
+        return True
+
 
 class Handler(InstructionGroup):
     def __init__(self):
@@ -38,12 +62,12 @@ class Handler(InstructionGroup):
         self.audio_controller = AudioController()
 
         self.time = 0.0
-        self.initialtime = 3.0
+        self.enemy_data = data
 
         # List of all objects in the game to be drawn
         self.objects = []
 
-        self.enemies = []
+        self.enemies = E_List()
         self.background = Background()
         self.foreground = Foreground()
         self.player = Player()
@@ -53,10 +77,7 @@ class Handler(InstructionGroup):
 
 
         self.add(self.background)
-        e = Enemy(0)
-        self.enemies.append(e)
-        self.add(e)
-        # self.add_enemies_in_range(self.time, self.time+self.initialtime)
+        self.add(self.enemies)
         self.add(self.foreground)
         self.add(self.player)        
 
@@ -76,8 +97,7 @@ class Handler(InstructionGroup):
 
         self.crosshair_on_enemy()
 
-        # self.add_enemies_in_range(self.time+self.initialtime, self.time+self.initialtime+dt)
-
+        self.add_enemies(self.time)
 
         self.time += dt
             
@@ -103,12 +123,16 @@ class Handler(InstructionGroup):
         # TODO: find points in some bounding box of the enemy
         pass
 
-    # def add_enemies_in_range(self, start, end):
-    #     for e in self.enemies:
-    #         if e[0] >= start and e[0] < end:
-    #         	enemy = Enemy(*e)
-    #             self.enemies.append(enemy)
-    #             self.add(enemy)
+    def add_enemies(self, time):
+        remove_list = []
+        for e in self.enemy_data:
+            if e[0] <= time:
+                E = Enemy(e[1])
+                self.enemies.add(E)
+                #self.add(E)
+                remove_list.append(e)
+        for r in remove_list:
+            self.enemy_data.remove(r)
 
     def get_flame(self):
         return self.player.get_flame()

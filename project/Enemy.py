@@ -21,7 +21,7 @@ from random import random, randint, choice
 import numpy as np
 
 import math
-D = 5000
+D = 1000
 
 class Enemy(InstructionGroup):
     def __init__(self, spawn_x, speed=None, audio_callback=None):
@@ -35,6 +35,11 @@ class Enemy(InstructionGroup):
 
         self.size = np.array((200,400))
 
+        if speed:
+            self.speed = speed
+        else:
+            self.speed = 5.0
+
 
         #---------#
         # Visuals #
@@ -42,9 +47,9 @@ class Enemy(InstructionGroup):
 
         self.color = Color(1,0.1,0.1)
         s = self.size*self.scale_with_z()
-        self.rect = CBRectangle(cbpos=(self.pos2D), cbsize=(s[0],s[1]))
+        self.cbrect = CBRectangle( cbpos=(self.pos2D[0],self.pos2D[1]), cbsize=(s[0],s[1]) )
         self.add(self.color)
-        self.add(self.rect)
+        self.add(self.cbrect)
 
         
 
@@ -63,17 +68,21 @@ class Enemy(InstructionGroup):
         
     def on_update(self, dt):
         if self.pos3D[2] < 0:
-            self.change3D(0, 0, 20)
+            s = dt*self.speed*50
+            self.change3D(0, 0, s)
+        else:
+            return False
 
+        return True
 
 
 
     def change3D(self, a, b, c):
         self.pos3D = (self.pos3D[0] + a, self.pos3D[1] + b, self.pos3D[2] + c)
         self.pos2D = self.convert_to_pos2D(self.pos3D)
-        self.rect.pos = self.pos2D
+        self.cbrect.cbpos = self.pos2D
         s = self.size*self.scale_with_z()
-        self.rect.size = (s[0],s[1])
+        self.cbrect.size = (s[0],s[1])
 
 
     def scale_with_z(self, z=None):
@@ -83,11 +92,8 @@ class Enemy(InstructionGroup):
         # note: z is negative for values in the field for enemies, with player at z=0
         #return 2*z/(3*D) + 1.0
         Y = Window.height*0.6
-        # magic numbers, as far as the eye can see!!!
-        c=  self.map(-Y/(D*D) * (z+D)*(z+D) + Y, 0.0, D/12.7, 1.0, 1/10)
-        print c
-        print z
-        return c
+        # magic numbers, as far as the eye can see!!! ignore magic numbers below!!!! :D
+        return self.map(-Y/(D*D) * (z+D)*(z+D) + Y, 0.0, D/(D*12.7/5000), 1.0, 1/10)
 
     def convert_to_pos2D(self, pos3D):
         #D = 500.0

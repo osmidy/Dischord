@@ -36,6 +36,8 @@ class Player(InstructionGroup):
 
         self.score = 0
 
+        self.health = 100
+
         self.controller = Leap.Controller()
 
         self.leftHand = Crosshair()
@@ -69,4 +71,7 @@ class Player(InstructionGroup):
 
     def score_up(self):
         self.score += 10
+
+    def get_health(self):
+        return self.health
 
