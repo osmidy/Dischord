@@ -40,7 +40,7 @@ class Enemy(InstructionGroup):
         if speed:
             self.speed = speed
         else:
-            self.speed = 5.0
+            self.speed = 1.0
 
 
         #---------#
@@ -73,6 +73,11 @@ class Enemy(InstructionGroup):
 
         self.audio_callback = audio_callback
 
+    def lit(self):
+        self.color.rgb = (0.1,0.1,1)
+
+    def un_lit(self):
+        self.color.rgb = (1,0.1,0.1)
 
         
     def on_update(self, dt):

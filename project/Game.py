@@ -31,6 +31,9 @@ class Game(BaseWidget):
         self.canvas.add(self.handler)
         self.add_widget(self.handler.get_flame())
 
+        self.HUD = topleft_label()
+        self.add_widget(self.HUD)
+
     def on_touch_down(self, touch):
         pass
 
@@ -39,5 +42,6 @@ class Game(BaseWidget):
 
     def on_update(self):
     	self.handler.on_update()
+        self.HUD.text = 'Health: %d\n' % self.handler.player.get_health()
 
 run(Game)
