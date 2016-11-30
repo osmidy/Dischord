@@ -53,6 +53,9 @@ class Enemy(InstructionGroup):
         self.add(self.color)
         self.add(self.cbrect)
 
+        # If currently targeted by crosshair
+        self.is_targeted = False
+
         
 
         # TODO: list of textures for different animation states
@@ -83,8 +86,13 @@ class Enemy(InstructionGroup):
 
     # Called when a crosshair first hovers over an enemy
     def on_target(self):
+        if (self.is_targeted):
+            return
+
         pitches = MusicHelper.build_midi_chord(self.notes)
-        self.audio_callback(pitches)
+
+        if self.audio_callback:
+            self.audio_callback(pitches)
 
     # Called immediately before dying when an enemy is hit by a player
     # Return True if successfully killed by the player, else False
@@ -101,9 +109,15 @@ class Enemy(InstructionGroup):
         else:
             pitches = MusicHelper.build_midi_chord(self.notes)
 
-        self.audio_callback(pitches)
+        if self.audio_callback:
+            self.audio_callback(pitches)
         return killed
 
+    def set_is_targeted(self, val):
+        self.is_targeted = val
+
+    def get_is_targeted(self):
+        return self.is_targeted
 
     def change3D(self, a, b, c):
         self.pos3D = (self.pos3D[0] + a, self.pos3D[1] + b, self.pos3D[2] + c)

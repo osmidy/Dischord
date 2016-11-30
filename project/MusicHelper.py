@@ -1,4 +1,4 @@
-
+import random
 
 '''
 Class handling logic for storing and retrieving musical notes
@@ -20,9 +20,10 @@ class MusicHelper(object):
     '''
     @staticmethod
     def build_midi_chord(notes):
-            
+
         def get_midi_pitch(note):
             lowerCase = str.lower(note)
+            return MusicHelper.noteToMidi[lowerCase]
 
 
         # TODO: only root chords supported for now
@@ -46,11 +47,16 @@ class MusicHelper(object):
     @staticmethod
     def get_dissonant_chord(key, chord):
         # TODO: distinguish between major and minor keys
-        properChord = list(MusicHelper.majorChordToNotes(chord))
+        properChord = list(MusicHelper.majorChordToNotes[chord])
         dissonantChord = list(properChord)
 
         pickedNote = random.choice(properChord)
-        wrongNote = random.choice(noteToMidi.keys())
+
+        wrongNote = None
+        while True:
+            wrongNote = random.choice(MusicHelper.noteToMidi.keys())
+            if wrongNote not in properChord:
+                break
 
         noteIndex = properChord.index(pickedNote)
         dissonantChord[noteIndex] = wrongNote

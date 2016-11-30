@@ -118,7 +118,6 @@ class Handler(InstructionGroup):
                 self.objects.add(currentHand)
                 currentHand.set_visible(True)
                 
-    ''' Return the enemies we've hit, if any'''
     def crosshair_on_enemy(self):
         # TODO: find points in some bounding box of the enemy
         crosshair = self.player.leftHand.get_pos()
@@ -144,12 +143,15 @@ class Handler(InstructionGroup):
                 if self.intersect(A,B,C,D):
                     line_of_sight.append(e)
                     break
-
-            #e.un_lit()
+                else:
+                    #e.un_lit()
+                    e.set_is_targeted(False)
 
         for e in line_of_sight:
             #e.lit()
-            pass
+            print e.get_is_targeted()
+            e.on_target()
+            e.set_is_targeted(True)
 
 
 
@@ -166,12 +168,16 @@ class Handler(InstructionGroup):
         remove_list = []
         for e in self.enemy_data:
             if e[0] <= time:
-                E = Enemy(e[1])
+                E = Enemy(e[1], audio_callback = self.play_enemy_sound)
                 self.enemies.add(E)
                 #self.add(E)
                 remove_list.append(e)
         for r in remove_list:
             self.enemy_data.remove(r)
+
+    def play_enemy_sound(self, pitches):
+        for pitch in pitches:
+            self.audio_controller.play_sfx(pitch)
 
     def get_flame(self):
         return self.player.get_flame()
