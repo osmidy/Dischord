@@ -42,7 +42,7 @@ class Button(InstructionGroup):
         self.color = color
         self.add(self.color)
 
-        self.crrect = CBRectangle( cbpos=(Window.width-50, y), cbsize=(50, h) )
+        self.crrect = CRRectangle( crpos=(Window.width, y), crsize=(50, h) )
         self.add(self.crrect)
 
     def on_update(self, dt):
@@ -70,7 +70,7 @@ class Foreground(InstructionGroup):
         button_y_positions = np.linspace(Window.height-height -  h/2, Window.height-h/2  , num_buttons)
         print button_y_positions
         for i in xrange(num_buttons):
-        	b = Button(button_y_positions[i], h-20, Color(0.5,0.4,0.35))
+        	b = Button(button_y_positions[i], h-5, Color(0.5,0.4,0.35))
         	self.buttons.append(b)
         	self.add(b)
 

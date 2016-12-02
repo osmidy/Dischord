@@ -177,7 +177,7 @@ class Handler(InstructionGroup):
         remove_list = []
         for e in self.enemy_data:
             if e[0] <= time:
-                E = Enemy(e[1], audio_callback = self.play_enemy_sound)
+                E = Enemy(e[1], audio_callback = self.play_enemy_sound, hurt_player_callback = self.player.decrement_health)
                 self.enemies.add(E)
                 #self.add(E)
                 remove_list.append(e)

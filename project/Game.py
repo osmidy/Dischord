@@ -1,3 +1,9 @@
+from kivy.config import Config
+#Config.set('graphics', 'height', '800')
+#Config.set('graphics', 'width', '1000')
+#Config.set('graphics', 'fullscreen', 'auto')
+
+
 import sys
 sys.path.append('..')
 from common.core import *
@@ -18,10 +24,10 @@ from kivy.uix.label import Label
 from kivy.graphics.instructions import InstructionGroup
 from kivy.graphics import Color, Ellipse, Rectangle
 from kivy.graphics import PushMatrix, PopMatrix, Translate, Scale, Rotate
-from kivy.config import Config
 
 from random import random, randint, choice
 import numpy as np
+
 
 class Game(BaseWidget):
     def __init__(self):

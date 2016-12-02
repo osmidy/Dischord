@@ -26,7 +26,7 @@ import math
 D = 1000
 
 class Enemy(InstructionGroup):
-    def __init__(self, spawn_x, key = 'C', chord = 'V', speed=None, audio_callback=None):
+    def __init__(self, spawn_x, key = 'C', chord = 'V', speed=None, audio_callback=None, hurt_player_callback=None):
         super(Enemy, self).__init__()
 
         # pos3D is 3D cartesian coords
@@ -41,6 +41,8 @@ class Enemy(InstructionGroup):
             self.speed = speed
         else:
             self.speed = 1.0
+
+        self.hurt_player_callback = hurt_player_callback
 
 
         #---------#
@@ -90,6 +92,7 @@ class Enemy(InstructionGroup):
             s = dt*self.speed*50
             self.change3D(0, 0, s)
         else:
+            self.hurt_player_callback(5)
             return False
 
         return True
