@@ -72,8 +72,6 @@ class Handler(InstructionGroup):
         self.background = Background()
         self.foreground = Foreground()
         self.player = Player()
-          
-        self.flames = []
 
         self.add(self.background)
         self.add(self.enemies)

@@ -20,3 +20,6 @@ class FlameHand(LeapHand):
         super(FlameHand, self).set_pos(pos)
         self.flameParticle.emitter_x = self.pos[0]
         self.flameParticle.emitter_y = self.pos[1]
+
+    def set_brightness(self, val):
+        pass
