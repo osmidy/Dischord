@@ -31,6 +31,9 @@ class Crosshair(LeapHand):
     def get_pos(self):
         return self.pos
 
+    def set_color(self, rgb):
+        self.color.rgb = rgb
+
     def set_lines(self):
         # We only allow horizontal movement of the crosshair,
         # so vertical position of crosshair is fixed
