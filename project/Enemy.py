@@ -25,10 +25,48 @@ import numpy as np
 
 import math
 D = 1000
+d = 30
+
+class Note_Display(InstructionGroup):
+    def __init__(self, key, chord, x_center, y_top):
+        super(Note_Display, self).__init__()
+
+        self.key = key
+        self.chord = chord
+
+        self.num_notes = 3
+        #d = 40
+        x = np.linspace(x_center-d,x_center+d,self.num_notes)
+
+        self.notes = []
+        for i in xrange(self.num_notes):
+            texture = self.get_texture(chord)
+            self.add( CBRectangle(texture=texture, cbpos=(x[i],y_top+5), cbsize=(25,25)) )
+
+    def add(self, note):
+        super(Note_Display, self).add(note)
+        self.notes.append(note)
+
+    def get_texture(self, chord):
+        #implement choosing proper image from chord/notes (how do I do this?)
+        return Image(source='A.png').texture
+
+    def on_update(self, dt, x_center, y_top):
+        #d = 40
+        x = np.linspace(x_center-d,x_center+d,self.num_notes)
+        for i in xrange(len(self.notes)):
+            self.notes[i].cbpos = ( x[i], y_top+5 )
+            self.notes[i].cbsize = ( 25, 25 )
+
 
 class Enemy(InstructionGroup):
     def __init__(self, spawn_x, key = Notes.C, chord = Chords.MAJOR_FIVE, speed=None, audio_callback=None, hurt_player_callback=None):
         super(Enemy, self).__init__()
+
+        self.time = 0.0
+        self.anim_switch_time = 0.270
+        self.anim_time = self.anim_switch_time
+        self.anim_frame = 0
 
         # pos3D is 3D cartesian coords
         self.pos3D = [spawn_x,0,-D]
@@ -36,7 +74,7 @@ class Enemy(InstructionGroup):
         # pos2D is for actual position on screen
         self.pos2D = self.convert_to_pos2D(self.pos3D)
 
-        self.size = np.array((200,400))
+        self.size = np.array((200,380))*Window.height/600
 
         if speed:
             self.speed = speed
@@ -51,16 +89,26 @@ class Enemy(InstructionGroup):
         #---------#
 
         self.texture = Image(source='ogre.png').texture
+        self.textures = []
         self.texture_a = self.texture.get_region(0,435,107,145);
+        self.textures.append(self.texture_a)
         self.texture_b = self.texture.get_region(107,435,107,145);
+        self.textures.append(self.texture_b)
         self.texture_c = self.texture.get_region(215,435,107,145);
+        self.textures.append(self.texture_c)
         self.texture_d = self.texture.get_region(322,435,107,145);
+        self.textures.append(self.texture_d)
+
 
         s = self.size*self.scale_with_z()
-        self.cbrect = CBRectangle(texture=self.texture_a, cpos=(self.pos2D[0],self.pos2D[1]), csize=(s[0],s[1]))
-        self.color = Color(1,1,1)
+        self.cbrect = CBRectangle(texture=self.textures[self.anim_frame], cbpos=(self.pos2D[0],self.pos2D[1]), cbsize=(s[0],s[1]))
+        self.color = Color(0.65,0.65,0.65)
         self.add(self.color)
         self.add(self.cbrect)
+
+        # Note Display
+        self.ND = Note_Display(key, chord, self.pos2D[0], self.pos2D[1]+s[1])
+        self.add(self.ND)
 
         # self.color = Color(1,0.1,0.1)
         # s = self.size*self.scale_with_z()
@@ -72,7 +120,6 @@ class Enemy(InstructionGroup):
         self.is_targeted = False
 
         self.is_dead = False
-
         
 
         # TODO: list of textures for different animation states
@@ -84,28 +131,44 @@ class Enemy(InstructionGroup):
         # Audio & Music #
         #---------------#
 
+        # get midi pitch numbers
         self.correctPitches = MusicHelper.get_proper_chord(key, chord)
         self.dissonantPitches, self.correctionIndex = MusicHelper.get_dissonant_chord(self.correctPitches)
 
         self.audio_callback = audio_callback
 
     def lit(self):
-        self.color.rgb = (0.1,0.1,1)
+        self.color.rgb = (0.4,0.4,1)
 
     def un_lit(self):
-        self.color.rgb = (1,1,1)
-
+        self.color.rgb = (0.65,0.65,0.65)
         
     def on_update(self, dt):
+        self.time += dt
+
+        # Check if enemy is dead, and return false immediately if so
         if self.is_dead:
             return False
 
+        # Animate the Enemy's frames
+        self.anim_time -= dt
+        print self.anim_time
+        if self.anim_time <= 0.0:
+            self.anim_time = self.anim_switch_time + self.anim_time
+            self.anim_frame += 1
+            self.cbrect.texture = self.textures[self.anim_frame%len(self.textures)]
+
+        # Move Enemy down toward the player
         if self.pos3D[2] < 0:
-            s = dt*self.speed*50
+            s = dt*self.speed*30
             self.change3D(0, 0, s)
         else:
             self.hurt_player_callback(5)
             return False
+
+        # Move Note Display to follow enemy
+        s = self.size*self.scale_with_z()
+        self.ND.on_update( dt, self.pos2D[0], self.pos2D[1]+s[1] )
 
         return True
 
@@ -154,22 +217,27 @@ class Enemy(InstructionGroup):
     def scale_with_z(self, z=None):
         if z == None:
             z = self.pos3D[2]
+            #print z
         #D = 500.0   # D should be the abs value of most negative z for enemies to spawn at
         # note: z is negative for values in the field for enemies, with player at z=0
         #return 2*z/(3*D) + 1.0
-        Y = Window.height*0.6
+        Y = Window.height*0.68
         # magic numbers, as far as the eye can see!!! ignore magic numbers below!!!! :D
-        return self.map(-Y/(D*D) * (z+D)*(z+D) + Y, 0.0, D/(D*12.7/5000), 1.0, 1/10)
+        #return self.map(-Y/(D*D) * (z+D)*(z+D) + Y, 0.0, D/(D*12.7/5000), 1.0, 1/10)
+        s = np.power(1.002,z)
+        #print s
+        return s
 
     def convert_to_pos2D(self, pos3D):
         #D = 500.0
-        Y = Window.height*0.6
+        Y = Window.height*0.68
         X = Window.width
         x = pos3D[0]
         y = pos3D[1]
         z = pos3D[2]
 
-        j = -Y/(D*D) * (z+D)*(z+D) + Y
+        #j = -Y/(D*D) * (z+D)*(z+D) + Y
+        j = Y - Y*np.power(1.002,z)
         c = self.map(j, 0, Y, 1, 1/3)
         i = self.map(x+X/2, 0, X, X/2*(1-c), X/2*(1+c))
 

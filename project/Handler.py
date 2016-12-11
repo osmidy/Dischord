@@ -13,7 +13,12 @@ from Enemy import *
 from Background import *
 from Foreground import *
 from Player import *
-from TonalFlowChart import *
+from MusicHelper import *
+from AudioController import *
+from leap.LeapHelper import *
+from LeapHand import *
+from Flame import Flame
+
 from kivy.core.window import Window
 from kivy.uix.image import Image
 from kivy.clock import Clock as kivyClock
@@ -23,16 +28,12 @@ from kivy.graphics import Color, Ellipse, Rectangle
 from kivy.graphics import PushMatrix, PopMatrix, Translate, Scale, Rotate
 from kivy.config import Config
 
-from AudioController import *
-
 from random import random, randint, choice
 import numpy as np
 
-from leap.LeapHelper import *
-from LeapHand import *
-from Flame import Flame
 
-data = [(0.0,0),(2.0,-250),(4.0,250),(6.0,-125),(10.0,0)]
+data = [(0.0,0),(2.0,-250),(4.0,250),(6.0,-400),(10.0,0)]
+#data = [(0.0,0)]
 
 class E_List(InstructionGroup):
     def __init__(self):
@@ -56,20 +57,26 @@ class E_List(InstructionGroup):
         return True
 
 class ProgressionManager(InstructionGroup):
-    def __init(self):
+    def __init__(self):
         super(ProgressionManager, self).__init__()
 
         # list of tuples: (chord, display_rect)
         self.progression = []
+        super(ProgressionManager, self).add(Color(1,1,1))
+        self.add(Chords.MAJOR_ONE)
+        self.add(Chords.MAJOR_ONE)
+        self.add(Chords.MAJOR_ONE)
+        self.add(Chords.MAJOR_ONE)
+        self.add(Chords.MAJOR_ONE)
 
     def add(self, chord):
-        x = 75 + len(super.progression)*50
-        y = Window.height - 75
-        txt = get_chord_texture(chord)
+        x = 75 + len(self.progression)*50
+        y = Window.height - 100
+        txt = self.get_chord_texture(chord)
         display_rect = Rectangle( texture=txt, pos=(x,y) , size=(45,45) )
         tup = (chord, display_rect)
         super(ProgressionManager, self).add(display_rect)
-        self.progression.add(tup)
+        self.progression.append(tup)
 
     def clear(self):
         for c in self.progression:
@@ -78,7 +85,7 @@ class ProgressionManager(InstructionGroup):
 
     def get_chord_texture(self, chord):
         #add code here to return proper texture based on chord
-        return Image(source='moon.png').texture
+        return Image(source='F.png').texture
 
     def on_update(self, dt):
         return True
@@ -88,7 +95,7 @@ class Handler(InstructionGroup):
     def __init__(self):
         super(Handler, self).__init__()
         
-        self.audio_controller = AudioController()
+        self.audio_controller = None
 
         self.time = 0.0
         self.enemy_data = data
@@ -111,8 +118,10 @@ class Handler(InstructionGroup):
         self.add(self.enemies)
         self.add(self.foreground)
         self.add(self.player)
-        self.add(self.PM)     
+        self.add(self.PM)
 
+    def include_audio(self, audio_controller):
+        self.audio_controller = audio_controller
         
     def on_update(self):
         self.audio_controller.on_update()
@@ -164,7 +173,7 @@ class Handler(InstructionGroup):
         crosshair = self.player.leftHand.get_pos()
         del_x = crosshair[0] - Window.width/2
         del_y = crosshair[1]
-        A = (Window.width/2, -200)
+        A = (Window.width/2, -10000) # 
         B = (Window.width/2 + 3*del_x, 3*del_y)
 
         self.target = None
@@ -246,7 +255,7 @@ class Handler(InstructionGroup):
         remove_list = []
         for e in self.enemy_data:
             if e[0] <= time:
-                E = Enemy(e[1], audio_callback = self.play_enemy_sound, hurt_player_callback = self.player.decrement_health)
+                E = Enemy(e[1], audio_callback=self.play_enemy_sound, hurt_player_callback=self.player.decrement_health)
                 self.enemies.add(E)
                 #self.add(E)
                 remove_list.append(e)

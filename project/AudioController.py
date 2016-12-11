@@ -23,16 +23,20 @@ import bisect
 
 
 class AudioController(object):
-    def __init__(self):
+    def __init__(self, song_path):
         super(AudioController, self).__init__()
         self.audio = Audio(2)
         self.mixer = Mixer()
         self.audio.set_generator(self.mixer)
 
+        self.bg_track1 = WaveGenerator(WaveFile(song_path+"/Fuyu_no_Nazo_Tochi.wav"), True)
+        self.mixer.add(self.bg_track1)
+
 
     # start / stop the song
     def toggle(self):
-        pass
+        for g in self.mixer.generators:
+            g.play_toggle()
 
     # mute / unmute the solo track
     def set_mute(self, mute):

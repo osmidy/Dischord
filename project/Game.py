@@ -1,6 +1,6 @@
 from kivy.config import Config
-#Config.set('graphics', 'height', '800')
-#Config.set('graphics', 'width', '1000')
+Config.set('graphics', 'height', '720')
+Config.set('graphics', 'width', '1080')
 #Config.set('graphics', 'fullscreen', 'auto')
 
 
@@ -33,7 +33,9 @@ class Game(BaseWidget):
     def __init__(self):
         super(Game, self).__init__()
 
+        self.audio_controller = AudioController("../project")
         self.handler = Handler()
+        self.handler.include_audio(self.audio_controller)
         self.canvas.add(self.handler)
         self.add_widget(self.handler.get_flame())
 
