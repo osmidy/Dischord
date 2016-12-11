@@ -61,15 +61,27 @@ class Player(InstructionGroup):
     def get_flame(self):
         return self.rightHand.flameParticle
 
+    def get_button(self):
+        if not self.rightHand:
+            return None
+        return self.rightHand.get_button()
+
+    def arm_weapon(self, btn):
+        if not self.rightHand:
+            return
+        self.rightHand.arm_weapon(btn)
+
+    def unarm_weapon(self):
+        if not self.rightHand:
+            return
+        self.rightHand.unarm_weapon()
+
     def is_attacking(self):
         hand = self.rightHand.get_hand()
         if not hand:
             return False
         
         y = hand.palm_normal.y
-        
-        print "VAL: " + str(1 - y)
-        print "ATTACKING: " + str(abs(1 - y) <= .05) + "\n"
         return abs(1 - y) <= .05
         
     def on_update(self, dt):

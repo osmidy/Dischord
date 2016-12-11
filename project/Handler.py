@@ -101,7 +101,6 @@ class Handler(InstructionGroup):
 
         # References to game elements interacted with
         self.target = None
-        self.active_button = None
 
         self.enemies = E_List()
         self.background = Background()
@@ -130,8 +129,9 @@ class Handler(InstructionGroup):
             self.remove(o)
 
         # Reset any disabled buttons if valid to do so
-        if self.active_button and not self.active_button.is_enabled and not self.player.is_attacking():
-            self.active_button.enable()
+        if not self.player.is_attacking():
+            for btn in self.foreground.buttons:
+                btn.enable()
 
         self.crosshair_on_enemy()
 
@@ -214,24 +214,25 @@ class Handler(InstructionGroup):
                 continue
 
             x1, y1, x2, y2 = btn.get_boundaries()
+
             if x1 <= flameX and flameX <= x2 and y1 <= flameY and flameY <= y2:
-                flame.arm_weapon(btn)
-                self.active_button = btn
+                self.player.arm_weapon(btn)
+                active_button = btn
                 return
 
 
     def try_fire(self):
         if self.player.is_attacking() and self.target:
             flame = self.get_flame()
-            self.active_button = flame.get_button()
+            active_button = self.player.get_button()
             
             if not active_button:
                 return
 
             note = active_button.get_note()
             self.target.on_hit(note.get_pitch())
-            self.active_button.disable()
-            flame.unarm_weapon()
+            active_button.disable()
+            self.player.unarm_weapon()
 
     def ccw(self, A,B,C):
         return (C[1]-A[1]) * (B[0]-A[0]) > (B[1]-A[1]) * (C[0]-A[0])

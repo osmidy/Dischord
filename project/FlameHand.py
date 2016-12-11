@@ -29,7 +29,7 @@ class FlameHand(LeapHand):
         self.update_color()
         self.is_armed = True
 
-    def unarm_weapon(self, btn):
+    def unarm_weapon(self):
         self.is_armed = False
         self.selectedButton = None
         self.color = (1, 1, 1) # White
@@ -42,8 +42,9 @@ class FlameHand(LeapHand):
         return self.selectedButton
 
     def set_brightness(self):
-        val = self.hand.palm_normal.y + 1.0
-        self.alpha = .4 + val/2.0
+        if self.hand:
+            val = self.hand.palm_normal.y + 1.0
+            self.alpha = .4 + val/2.0
 
     def brigten_flame(self):
         self.alpha = 1.0
@@ -52,9 +53,12 @@ class FlameHand(LeapHand):
         self.alpha = 0.4
 
     def update_color(self):
-        prop = list(self.color + tuple(self.alpha))
-        self.flameParticle.start_color = ListProperty(prop)
-        self.flameParticle.end_color = ListProperty(prop)
+        rgba = []
+        for i in self.color:
+            rgba.append(i)
+        rgba.append(self.alpha)
+        self.flameParticle.start_color = rgba
+        self.flameParticle.end_color = rgba
 
     def set_pos(self, pos):
         super(FlameHand, self).set_pos(pos)

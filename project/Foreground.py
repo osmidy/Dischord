@@ -57,7 +57,9 @@ class Button(InstructionGroup):
 
     def get_boundaries(self):
         lowerX, lowerY = self.crrect.pos
-        upperX, upperY = self.crrect.size
+        upperX = lowerX + self.crrect.get_crsize()[0]
+        upperY = lowerY + self.crrect.get_crsize()[1]
+
         return lowerX, lowerY, upperX, upperY
 
     def get_note(self):
@@ -99,7 +101,6 @@ class Foreground(InstructionGroup):
         # rygb from top to bottom (so, ordered bgyr here)
         colors = [(.22, .22, 1.), (.22, 1., .22), (1., 1., .22), (1., .22, .22)]
 
-        print button_y_positions
         for i in xrange(num_buttons):
         	b = Button(button_y_positions[i], h-5, Color(*colors[i]))
         	self.buttons.append(b)
