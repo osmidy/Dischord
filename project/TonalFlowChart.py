@@ -8,7 +8,7 @@ class Chord:
     diminishedChord = "diminished"
 
     # Number of semitones above root for third and fifth of the chord, respectively
-    chordIntervalSize = {majorChord: (4, 3), minorChord: (3, 4), diminishedChord: (3, 3)}
+    chordIntervalSize = {majorChord: (4, 7), minorChord: (3, 4), diminishedChord: (3, 6)}
 
     def __init__(self, chord_name, chord_type):
         self.chord_name = chord_name
@@ -58,12 +58,12 @@ class TonalFlowChart:
     nextChordMapMinor = {Chords.MAJOR_SEVEN: (Chords.MAJOR_THREE),\
                          Chords.MAJOR_THREE: (Chords.MAJOR_SIX, Chords.MINOR_FOUR),\
                          Chords.MAJOR_SIX: (Chords.MINOR_FOUR, Chords.DIMINISHED_TWO),\
-                         Chords.MINOR_FOUR: (Chords.MINOR_ONE, Chords.DIMINISHED_TWO, CHORDS.MAJOR_FIVE),\
+                         Chords.MINOR_FOUR: (Chords.MINOR_ONE, Chords.DIMINISHED_TWO, Chords.MAJOR_FIVE),\
                          Chords.DIMINISHED_TWO: (Chords.MAJOR_FIVE, Chords.DIMINISHED_SEVEN),\
                          Chords.MAJOR_FIVE: (Chords.DIMINISHED_SEVEN, Chords.MAJOR_SIX, Chords.MINOR_ONE),\
                          Chords.DIMINISHED_SEVEN: (Chords.MINOR_ONE)}
 
-    def __init__(self, chart_type = TonalFlowChart.MAJOR):
+    def __init__(self, chart_type = MAJOR):
         self.chart_type = chart_type
 
         if (chart_type == TonalFlowChart.MAJOR):
@@ -78,9 +78,9 @@ class TonalFlowChart:
         chordIsOne = chord == Chords.MAJOR_ONE or chord == Chords.MINOR_ONE
         
         if chordIsOne and self.chart_type == TonalFlowChart.MAJOR:
-            return [MINOR_TWO = "ii", MINOR_THREE = "iii", MAJOR_FOUR = "IV", MAJOR_FIVE = "V", MINOR_SIX = "vi", DIMINISHED_SEVEN = "vii*"]
+            return [MINOR_TWO, MINOR_THREE, MAJOR_FOUR, MAJOR_FIVE, MINOR_SIX, DIMINISHED_SEVEN]
         elif chordIsOne:
-            return [DIMINISHED_TWO = "ii*", MAJOR_THREE = "III", MINOR_FOUR = "iv", MINOR_FIVE = "v", MAJOR_SIX = "VI", MAJOR_SEVEN = "VII"]
+            return [DIMINISHED_TWO, MAJOR_THREE, MINOR_FOUR, MINOR_FIVE, MAJOR_SIX, MAJOR_SEVEN]
         else:
             return self.chartMap[chord]
 

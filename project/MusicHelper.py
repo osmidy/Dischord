@@ -5,34 +5,52 @@ from TonalFlowChart import *
 Represenation of musical notes/midi pitches
 '''
 class Note:
-    C = 60
-    B_SHARP = 60
+    def __init__(self, note_name, midi_pitch):
+        self.note_name = note_name
+        self.midi_pitch = midi_pitch
+
+    def get_pitch(self):
+        return self.midi_pitch
+
+    def get_name(self):
+        return self.note_name
+
+'''
+Enumeration of note types
+'''
+class Notes:
+    C = Note("C", 60)
+    B_SHARP = Note("B#", 60)
     
-    C_SHARP = 61
-    D_FLAT = 61
+    C_SHARP = Note("C#", 61)
+    D_FLAT = Note("Db", 61)
     
-    D = 62
+    D = Note("D", 62)
 
-    D_SHARP = 63
-    D_FLAT = 63
+    D_SHARP = Note("D#", 63)
+    E_FLAT = Note("Eb", 63)
 
-    E = 64
-    F_FLAT = 65
+    E = Note("E", 64)
+    F_FLAT = Note("Fb", 64)
 
-    F = 65
-    E_SHARP = 65
+    F = Note("F", 65)
+    E_SHARP = Note("E#", 65)
 
-    G = 67
+    F_SHARP = Note("F#", 66)
+    G_FLAT = Note("Gb", 66)
 
-    G_SHARP = 68
-    A_FLAT = 68
+    G = Note("G",  67)
 
-    A = 69
+    G_SHARP = Note("G#", 68)
+    A_FLAT = Note("Ab", 68)
 
-    A_SHARP = 70
-    B_FLAT = 70
+    A = Note("A", 69)
 
-    B = 71
+    A_SHARP = Note("A#", 70)
+    B_FLAT = Note("Bb", 70)
+
+    B = Note("B", 71)
+    C_FLAT = Note("Cb", 71)
 
 '''
 Class handling logic for storing and retrieving musical notes
@@ -45,7 +63,7 @@ class MusicHelper(object):
     # TODO: mechanism for supporting other keys; enharmonic notes
     noteToMidi = {'c': 60, 'd': 62, 'e': 64, 'f': 65, 'g': 67, 'a': 69, 'b': 71}
 
-    # Number of semitones above the tonic the root of a given chord is
+    # Given a certain chord type, the number of semitones its root is above the tonic
     tonicSemitoneDistance = {Chords.MAJOR_ONE: 0,\
                                 Chords.MINOR_TWO: 2,\
                                 Chords.MINOR_THREE: 4,\
@@ -62,58 +80,42 @@ class MusicHelper(object):
                                 Chords.MAJOR_SIX : 8,\
                                 Chords.MAJOR_SEVEN: 10}
 
-    majorChordToNotes = {"I": "ceg", "ii": "dfa", "iii": "egb", "IV": "fac", "V": "gbd", "VI": "ace", "vii": "bdf"}
-
-    # TODO: better chord resolution
     '''
-    Builds a chord with the specified notes (dissonant or not)
-    TODO: support inversions of chords and seven chords
+    Builds the specified midi chord in the given key. Returns a tuple of the 
+    three (or more) pitches
     '''
     @staticmethod
-    def build_midi_chord(notes):
+    def get_proper_chord(key, chord):
+        pitch = key.get_pitch()
 
-        def get_midi_pitch(note):
-            lowerCase = str.lower(note)
-            return MusicHelper.noteToMidi[lowerCase]
+        rootDiff = MusicHelper.tonicSemitoneDistance[chord]
+        root = pitch + rootDiff
 
+        thirdDiff, fifthDiff = chord.get_chord_intervals()
+        third = pitch + thirdDiff
+        fifth = pitch + fifthDiff
 
-        # TODO: only root chords supported for now
-        root = get_midi_pitch(notes[0])
-        third = get_midi_pitch(notes[1])
-        fifth = get_midi_pitch(notes[2])
+        return (root, third, fifth)
 
-        if third < root:
-            third += MusicHelper.octave
-        if fifth < root:
-            fifth += MusicHelper.octave
-
-        return [root, third, fifth]
 
     '''
-    Return a string of notes for a chord, where one note is not
-    part of the actual chord. Returns the dissonant and proper chords,
-    eachh as a list of the notes in the chord in order, and the
-    index of the wrong note.
+    Returns a dissonant form of the given proper chord as a tuple of notes in the chord,
+    and the index of the wrong note.
     '''
     @staticmethod
-    def get_dissonant_chord(key, chord):
-        # TODO: distinguish between major and minor keys
-        properChord = list(MusicHelper.majorChordToNotes[chord])
+    def get_dissonant_chord(properChord):
+        replacedNote = random.choice(properChord)
+
+        wrongNote = None        
+        choiceRange = xrange(replacedNote - 4, replacedNote + 4)
+        
+        while True:
+            wrongNote = random.choice(choiceRange)
+            if wrongNote not in properChord:
+                break
+
         dissonantChord = list(properChord)
+        noteIndex = properChord.index(replacedNote)
+        dissonantChord[noteIndex] = wrongNote
 
-        pickedNote = random.choice(properChord)
-
-        # wrongNote = None
-        # while True:
-        #     wrongNote = random.choice(MusicHelper.noteToMidi.keys())
-        #     if wrongNote not in properChord:
-        #         break
-
-        # noteIndex = properChord.index(pickedNote)
-        # dissonantChord[noteIndex] = wrongNote
-
-        dissonantChord = ['g', 'c', 'd']
-        noteIndex = 1
-
-        return dissonantChord, properChord, noteIndex
-
+        return tuple(dissonantChord), noteIndex

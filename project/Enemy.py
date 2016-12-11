@@ -26,7 +26,7 @@ import math
 D = 1000
 
 class Enemy(InstructionGroup):
-    def __init__(self, spawn_x, key = 'C', chord = 'V', speed=None, audio_callback=None, hurt_player_callback=None):
+    def __init__(self, spawn_x, key = Notes.C, chord = Chords.MAJOR_FIVE, speed=None, audio_callback=None, hurt_player_callback=None):
         super(Enemy, self).__init__()
 
         # pos3D is 3D cartesian coords
@@ -70,10 +70,9 @@ class Enemy(InstructionGroup):
         #---------------#
         # Audio & Music #
         #---------------#
-        
-        self.key = key
-        self.chord = chord
-        self.notes, self.correctNotes, self.correctionIndex = MusicHelper.get_dissonant_chord(self.key, self.chord)
+
+        self.correctPitches = MusicHelper.get_proper_chord(key, chord)
+        self.dissonantPitches, self.correctionIndex = MusicHelper.get_dissonant_chord(self.correctPitches)
 
         self.audio_callback = audio_callback
 
@@ -102,24 +101,24 @@ class Enemy(InstructionGroup):
         if (self.is_targeted):
             return
 
-        pitches = MusicHelper.build_midi_chord(self.notes)
-
         if self.audio_callback:
-            self.audio_callback(pitches)
+            self.audio_callback(self.dissonantPitches)
 
     # Called immediately before dying when an enemy is hit by a player
     # Return True if successfully killed by the player, else False
+
+    # TODO: if we throw a wrong note, play the chored with that note subbed in
     def on_hit(self, note):
         lowercaseNote = str(note)
-        #comparisonNotes = self.notes[:self.correctionIndex] + [lowercaseNote] + self.notes[self.correctionIndex:]
-        comparisonNotes = ['g', 'b', 'd']
+        comparisonPitches = self.dissonantPitches[:self.correctionIndex] + [lowercaseNote] + self.dissonantPitches[self.correctionIndex:]
 
         pitches = None
-        if comparisonNotes == self.correctNotes:
-            pitches = MusicHelper.build_midi_chord(self.correctNotes)
+        if comparisonPitches == self.correctPitches:
+            pitches = self.correctPitches
             self.is_dead = True
         else:
-            pitches = MusicHelper.build_midi_chord(self.notes)
+            pitches = list(self.dissonantPitches)
+            pitches[self.correctionIndex] = note.get_pitch()
 
         if self.audio_callback:
             self.audio_callback(pitches)
