@@ -66,7 +66,9 @@ class Handler(InstructionGroup):
         # List of all objects in the game to be drawn
         self.objects = []
 
+        # References to game elements interacted with
         self.target = None
+        self.active_button = None
 
         self.enemies = E_List()
         self.background = Background()
@@ -93,8 +95,13 @@ class Handler(InstructionGroup):
         for o in kill_list:
             self.remove(o)
 
+        # Reset any disabled buttons if valid to do so
+        if self.active_button and not self.active_button.is_enabled and not self.player.is_attacking():
+            self.active_button.enable()
+
         self.crosshair_on_enemy()
 
+        self.select_button()
         self.try_fire()
 
         self.add_enemies(self.time)
@@ -157,12 +164,40 @@ class Handler(InstructionGroup):
                 e.un_lit()
                 e.set_is_targeted(False)
 
+    def select_button(self):
+        if self.player.is_attacking():
+            return
+
+        flame = self.get_flame()
+        if flame == None:
+            return
+
+        flameX = flame.emitter_x
+        flameY = flame.emitter_y
+
+        for btn in self.foreground.buttons:
+            if not btn.is_enabled:
+                continue
+
+            x1, y1, x2, y2 = btn.get_boundaries()
+            if x1 <= flameX and flameX <= x2 and y1 <= flameY and flameY <= y2:
+                flame.arm_weapon(btn)
+                self.active_button = btn
+                return
+
+
     def try_fire(self):
         if self.player.is_attacking() and self.target:
-            self.target.on_hit(Notes.B)
-            # TODO: get current box highligthed by fire
+            flame = self.get_flame()
+            self.active_button = flame.get_button()
+            
+            if not active_button:
+                return
 
-
+            note = active_button.get_note()
+            self.target.on_hit(note.get_pitch())
+            self.active_button.disable()
+            flame.unarm_weapon()
 
     def ccw(self, A,B,C):
         return (C[1]-A[1]) * (B[0]-A[0]) > (B[1]-A[1]) * (C[0]-A[0])

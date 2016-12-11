@@ -65,13 +65,19 @@ class Player(InstructionGroup):
         hand = self.rightHand.get_hand()
         if not hand:
             return False
+        
         y = hand.palm_normal.y
+        
+        print "VAL: " + str(1 - y)
+        print "ATTACKING: " + str(abs(1 - y) <= .05) + "\n"
         return abs(1 - y) <= .05
         
     def on_update(self, dt):
         if self.controller.is_connected:
             frame = self.controller.frame()
             self.set_hands(frame.hands)
+            if self.rightHand:
+                self.rightHand.set_brightness()
 
         # Should never be removed from the game
         return True

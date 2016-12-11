@@ -106,22 +106,22 @@ class Enemy(InstructionGroup):
 
     # Called immediately before dying when an enemy is hit by a player
     # Return True if successfully killed by the player, else False
-
-    # TODO: if we throw a wrong note, play the chored with that note subbed in
-    def on_hit(self, note):
-        lowercaseNote = str(note)
-        comparisonPitches = self.dissonantPitches[:self.correctionIndex] + [lowercaseNote] + self.dissonantPitches[self.correctionIndex:]
+    def on_hit(self, pitch):
+        comparisonPitches = self.dissonantPitches[:self.correctionIndex] + tuple(pitch) + self.dissonantPitches[self.correctionIndex:]
 
         pitches = None
+        killed = False
         if comparisonPitches == self.correctPitches:
             pitches = self.correctPitches
             self.is_dead = True
+            killed = True
         else:
-            pitches = list(self.dissonantPitches)
-            pitches[self.correctionIndex] = note.get_pitch()
+            pitches = comparisonPitches
 
         if self.audio_callback:
             self.audio_callback(pitches)
+
+        return killed
         
 
     def set_is_targeted(self, val):

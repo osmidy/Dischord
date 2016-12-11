@@ -19,6 +19,8 @@ from kivy.graphics import PushMatrix, PopMatrix, Translate, Scale, Rotate
 from kivy.graphics.texture import Texture
 from kivy.config import Config
 
+from MusicHelper import Note, Notes
+
 from random import random, randint, choice
 import numpy as np
 
@@ -36,18 +38,43 @@ class Wall(InstructionGroup):
 		pass
 
 class Button(InstructionGroup):
-    def __init__(self, y, h, color):
+    def __init__(self, y, h, color, note = Notes.B):
         super(Button, self).__init__()
 
         self.color = color
+        self.rgb = color.rgb
+        
+        # Set alpha
+        self.color.a = .65
+
         self.add(self.color)
 
         self.crrect = CRRectangle( crpos=(Window.width, y), crsize=(50, h) )
         self.add(self.crrect)
 
+        self.note = note
+        self.is_enabled = True
+
+    def get_boundaries(self):
+        lowerX, lowerY = self.crrect.pos
+        upperX, upperY = self.crrect.size
+        return lowerX, lowerY, upperX, upperY
+
+    def get_note(self):
+        return self.note
+
+    def enable(self):
+        self.is_enabled = True
+        self.color.rgb = self.rgb
+        # TODO: get new note, make note text visible
+
+    def disable(self):
+        self.is_enabled = False
+        self.color.rgb = (.5, .5, .5) # Gray
+        # TODO: make note text invisible, set note to None
+
     def on_update(self, dt):
         pass
-
 
 
 class Foreground(InstructionGroup):
@@ -68,9 +95,13 @@ class Foreground(InstructionGroup):
         h = height/num_buttons
 
         button_y_positions = np.linspace(Window.height-height -  h/2, Window.height-h/2  , num_buttons)
+
+        # rygb from top to bottom (so, ordered bgyr here)
+        colors = [(.22, .22, 1.), (.22, 1., .22), (1., 1., .22), (1., .22, .22)]
+
         print button_y_positions
         for i in xrange(num_buttons):
-        	b = Button(button_y_positions[i], h-5, Color(0.5,0.4,0.35))
+        	b = Button(button_y_positions[i], h-5, Color(*colors[i]))
         	self.buttons.append(b)
         	self.add(b)
 
