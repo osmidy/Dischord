@@ -29,7 +29,7 @@ class AudioController(object):
         self.mixer = Mixer()
         self.audio.set_generator(self.mixer)
 
-        self.bg_track1 = WaveGenerator(WaveFile(song_path+"/Fuyu_no_Nazo_Tochi.wav"), True)
+        self.bg_track1 = WaveGenerator(WaveFile(song_path), True)
         self.mixer.add(self.bg_track1)
 
 

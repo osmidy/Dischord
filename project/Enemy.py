@@ -49,7 +49,7 @@ class Note_Display(InstructionGroup):
 
     def get_texture(self, chord):
         #implement choosing proper image from chord/notes (how do I do this?)
-        return Image(source='A.png').texture
+        return Image(source='../data/A.png').texture
 
     def on_update(self, dt, x_center, y_top):
         #d = 40
@@ -88,7 +88,7 @@ class Enemy(InstructionGroup):
         # Visuals #
         #---------#
 
-        self.texture = Image(source='ogre.png').texture
+        self.texture = Image(source='../data/ogre.png').texture
         self.textures = []
         self.texture_a = self.texture.get_region(0,435,107,145);
         self.textures.append(self.texture_a)
@@ -124,7 +124,7 @@ class Enemy(InstructionGroup):
 
         # TODO: list of textures for different animation states
         # TODO: eventually replace with textures
-        # self.texture = Image(source='find_a_picture.png').texture
+        # self.texture = Image(source='../data/find_a_picture.png').texture
         # self.rect = Rectangle(texture=self.texture, pos=(0,0), size=(100,100))
 
         #---------------#

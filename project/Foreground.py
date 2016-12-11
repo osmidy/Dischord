@@ -29,7 +29,7 @@ class Wall(InstructionGroup):
 	def __init__(self):
 		super(Wall, self).__init__()
 
-		self.texture = Image(source='stonewall2_edited.png').texture
+		self.texture = Image(source='../data/stonewall2_edited.png').texture
 		self.rect = Rectangle( texture=self.texture, pos=(0,0), size=(Window.width,Window.height*0.2) )
 		self.add(Color(0.2,0.15,0.15))
 		self.add(self.rect)

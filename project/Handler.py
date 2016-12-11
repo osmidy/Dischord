@@ -85,7 +85,7 @@ class ProgressionManager(InstructionGroup):
 
     def get_chord_texture(self, chord):
         #add code here to return proper texture based on chord
-        return Image(source='F.png').texture
+        return Image(source='../data/F.png').texture
 
     def on_update(self, dt):
         return True
