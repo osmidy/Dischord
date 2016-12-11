@@ -10,6 +10,7 @@ from common.wavesrc import *
 from common.writer import *
 
 from kivy.core.window import Window
+from kivy.uix.image import Image
 from kivy.clock import Clock as kivyClock
 from kivy.uix.label import Label
 from kivy.graphics.instructions import InstructionGroup
@@ -49,11 +50,23 @@ class Enemy(InstructionGroup):
         # Visuals #
         #---------#
 
-        self.color = Color(1,0.1,0.1)
+        self.texture = Image(source='ogre.png').texture
+        self.texture_a = self.texture.get_region(0,435,107,145);
+        self.texture_b = self.texture.get_region(107,435,107,145);
+        self.texture_c = self.texture.get_region(215,435,107,145);
+        self.texture_d = self.texture.get_region(322,435,107,145);
+
         s = self.size*self.scale_with_z()
-        self.cbrect = CBRectangle( cbpos=(self.pos2D[0],self.pos2D[1]), cbsize=(s[0],s[1]) )
+        self.cbrect = CBRectangle(texture=self.texture_a, cpos=(self.pos2D[0],self.pos2D[1]), csize=(s[0],s[1]))
+        self.color = Color(1,1,1)
         self.add(self.color)
         self.add(self.cbrect)
+
+        # self.color = Color(1,0.1,0.1)
+        # s = self.size*self.scale_with_z()
+        # self.cbrect = CBRectangle( cbpos=(self.pos2D[0],self.pos2D[1]), cbsize=(s[0],s[1]) )
+        # self.add(self.color)
+        # self.add(self.cbrect)
 
         # If currently targeted by crosshair
         self.is_targeted = False
@@ -80,7 +93,7 @@ class Enemy(InstructionGroup):
         self.color.rgb = (0.1,0.1,1)
 
     def un_lit(self):
-        self.color.rgb = (1,0.1,0.1)
+        self.color.rgb = (1,1,1)
 
         
     def on_update(self, dt):
