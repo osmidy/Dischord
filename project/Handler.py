@@ -13,7 +13,9 @@ from Enemy import *
 from Background import *
 from Foreground import *
 from Player import *
+from TonalFlowChart import *
 from kivy.core.window import Window
+from kivy.uix.image import Image
 from kivy.clock import Clock as kivyClock
 from kivy.uix.label import Label
 from kivy.graphics.instructions import InstructionGroup
@@ -53,6 +55,34 @@ class E_List(InstructionGroup):
 
         return True
 
+class ProgressionManager(InstructionGroup):
+    def __init(self):
+        super(ProgressionManager, self).__init__()
+
+        # list of tuples: (chord, display_rect)
+        self.progression = []
+
+    def add(self, chord):
+        x = 75 + len(super.progression)*50
+        y = Window.height - 75
+        txt = get_chord_texture(chord)
+        display_rect = Rectangle( texture=txt, pos=(x,y) , size=(45,45) )
+        tup = (chord, display_rect)
+        super(ProgressionManager, self).add(display_rect)
+        self.progression.add(tup)
+
+    def clear(self):
+        for c in self.progression:
+            super(ProgressionManager, self).remove(c[1])
+        self.progression[:] = []
+
+    def get_chord_texture(self, chord):
+        #add code here to return proper texture based on chord
+        return Image(source='moon.png').texture
+
+    def on_update(self, dt):
+        return True
+
 
 class Handler(InstructionGroup):
     def __init__(self):
@@ -62,6 +92,9 @@ class Handler(InstructionGroup):
 
         self.time = 0.0
         self.enemy_data = data
+
+        # Handles and displays progressions near top of screen
+        self.PM = ProgressionManager()
 
         # List of all objects in the game to be drawn
         self.objects = []
@@ -78,7 +111,8 @@ class Handler(InstructionGroup):
         self.add(self.background)
         self.add(self.enemies)
         self.add(self.foreground)
-        self.add(self.player)     
+        self.add(self.player)
+        self.add(self.PM)     
 
         
     def on_update(self):
