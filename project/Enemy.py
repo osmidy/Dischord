@@ -107,7 +107,7 @@ class Enemy(InstructionGroup):
     # Called immediately before dying when an enemy is hit by a player
     # Return True if successfully killed by the player, else False
     def on_hit(self, pitch):
-        comparisonPitches = self.dissonantPitches[:self.correctionIndex] + tuple(pitch) + self.dissonantPitches[self.correctionIndex:]
+        comparisonPitches = self.dissonantPitches[:self.correctionIndex] + [pitch] + self.dissonantPitches[self.correctionIndex:]
 
         pitches = None
         killed = False

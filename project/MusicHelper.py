@@ -81,7 +81,7 @@ class MusicHelper(object):
                                 Chords.MAJOR_SEVEN: 10}
 
     '''
-    Builds the specified midi chord in the given key. Returns a tuple of the 
+    Builds the specified midi chord in the given key. Returns a list of the 
     three (or more) pitches
     '''
     @staticmethod
@@ -95,11 +95,11 @@ class MusicHelper(object):
         third = pitch + thirdDiff
         fifth = pitch + fifthDiff
 
-        return (root, third, fifth)
+        return [root, third, fifth]
 
 
     '''
-    Returns a dissonant form of the given proper chord as a tuple of notes in the chord,
+    Returns a dissonant form of the given proper chord as a list of notes in the chord,
     and the index of the wrong note.
     '''
     @staticmethod
@@ -118,4 +118,4 @@ class MusicHelper(object):
         noteIndex = properChord.index(replacedNote)
         dissonantChord[noteIndex] = wrongNote
 
-        return tuple(dissonantChord), noteIndex
+        return dissonantChord, noteIndex

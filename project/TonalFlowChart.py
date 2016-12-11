@@ -78,9 +78,9 @@ class TonalFlowChart:
         chordIsOne = chord == Chords.MAJOR_ONE or chord == Chords.MINOR_ONE
         
         if chordIsOne and self.chart_type == TonalFlowChart.MAJOR:
-            return [MINOR_TWO, MINOR_THREE, MAJOR_FOUR, MAJOR_FIVE, MINOR_SIX, DIMINISHED_SEVEN]
+            return [Chords.MINOR_TWO, Chords.MINOR_THREE, Chords.MAJOR_FOUR, Chords.MAJOR_FIVE, Chords.MINOR_SIX, Chords.DIMINISHED_SEVEN]
         elif chordIsOne:
-            return [DIMINISHED_TWO, MAJOR_THREE, MINOR_FOUR, MINOR_FIVE, MAJOR_SIX, MAJOR_SEVEN]
+            return [Chords.DIMINISHED_TWO, Chords.MAJOR_THREE, Chords.MINOR_FOUR, Chords.MINOR_FIVE, Chords.MAJOR_SIX, Chords.MAJOR_SEVEN]
         else:
             return self.chartMap[chord]
 
