@@ -364,6 +364,7 @@ class Handler(InstructionGroup):
                 chord = self.target.resolvedPitches
                 chordType, root = Chord.get_chord_type(self.key, chord)
                 scaleDeg = MusicHelper.get_scale_degree(self.key, root)
+
                 
                 if not self.tonalFlowChart.is_valid_progression(scaleDeg, self.PM.prev_scale_degree):
                     self.PM.clear()
@@ -384,7 +385,7 @@ class Handler(InstructionGroup):
         remove_list = []
         for e in self.enemy_data:
             if e[0] <= time:
-                E = Enemy(e[1], self.key, audio_callback=self.play_enemy_sound, hurt_player_callback=self.player.decrement_health, dmg_rect_on_hit_callback=self.dmg_rect.on_hit, add_sound=self.audio_controller.add_enemy_sound, remove_sound=self.audio_controller.remove_enemy_sound)
+                E = Enemy(e[1], self.key, audio_callback=self.play_enemy_sound, clear_prog=self.PM.clear(), hurt_player_callback=self.player.decrement_health, dmg_rect_on_hit_callback=self.dmg_rect.on_hit, add_sound=self.audio_controller.add_enemy_sound, remove_sound=self.audio_controller.remove_enemy_sound)
                 self.enemies.add(E)
                 remove_list.append(e)
                 

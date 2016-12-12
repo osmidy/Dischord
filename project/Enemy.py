@@ -69,7 +69,7 @@ class Note_Display(InstructionGroup):
 
 
 class Enemy(InstructionGroup):
-    def __init__(self, spawn_x, key = Notes.C, speed=1.0, audio_callback=None, hurt_player_callback=None, dmg_rect_on_hit_callback=None, add_sound=None, remove_sound=None):
+    def __init__(self, spawn_x, key = Notes.C, speed=1.0, audio_callback=None, hurt_player_callback=None, dmg_rect_on_hit_callback=None, add_sound=None, remove_sound=None, clear_prog=None):
         super(Enemy, self).__init__()
 
         self.time = 0.0
@@ -87,6 +87,7 @@ class Enemy(InstructionGroup):
         # Callback Functions
         self.hurt_player_callback = hurt_player_callback
         self.dmg_rect_on_hit_callback = dmg_rect_on_hit_callback
+        self.clear_prog = clear_prog
 
         #---------#
         # Visuals #
@@ -185,6 +186,7 @@ class Enemy(InstructionGroup):
             self.change3D(0, 0, s)
         else:
             self.hurt_player_callback(5)
+            self.clear_prog()
             self.dmg_rect_on_hit_callback()
             self.is_dead = True
 
