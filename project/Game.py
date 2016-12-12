@@ -33,7 +33,7 @@ class Game(BaseWidget):
     def __init__(self):
         super(Game, self).__init__()
 
-        self.audio_controller = AudioController("../data/Fuyu_no_Nazo_Tochi.wav")
+        self.audio_controller = AudioController()
         self.handler = Handler()
         self.handler.include_audio(self.audio_controller)
         self.canvas.add(self.handler)

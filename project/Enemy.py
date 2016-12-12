@@ -60,7 +60,7 @@ class Note_Display(InstructionGroup):
 
 
 class Enemy(InstructionGroup):
-    def __init__(self, spawn_x, key = Notes.C, chord = Chords.MAJOR_FIVE, speed=None, audio_callback=None, hurt_player_callback=None, dmg_rect_on_hit_callback=None):
+    def __init__(self, spawn_x, key = Notes.C, chord = Chords.MAJOR_FIVE, speed=1.0, audio_callback=None, hurt_player_callback=None, dmg_rect_on_hit_callback=None, add_sound=None, remove_sound=None):
         super(Enemy, self).__init__()
 
         self.time = 0.0
@@ -76,14 +76,11 @@ class Enemy(InstructionGroup):
 
         self.size = np.array((200,380))*Window.height/600
 
-        if speed:
-            self.speed = speed
-        else:
-            self.speed = 1.0
+        self.speed = speed
 
+        # Callback Functions
         self.hurt_player_callback = hurt_player_callback
         self.dmg_rect_on_hit_callback = dmg_rect_on_hit_callback
-
 
         #---------#
         # Visuals #
@@ -136,7 +133,13 @@ class Enemy(InstructionGroup):
         self.correctPitches = MusicHelper.get_proper_chord(key, chord)
         self.dissonantPitches, self.correctionIndex = MusicHelper.get_dissonant_chord(self.correctPitches)
 
+        #TODO: these are example pitches; we need to add the pitches from the notes of chord...
+        self.seq = add_sound((69,74,78))
+
+        # Callback Functions
         self.audio_callback = audio_callback
+        self.add_sound = add_sound
+        self.remove_sound = remove_sound
 
     def lit(self):
         self.color.rgb = (0.4,0.4,1)
@@ -149,6 +152,8 @@ class Enemy(InstructionGroup):
 
         # Check if enemy is dead, and return false immediately if so
         if self.is_dead:
+            self.remove_sound(self.seq)
+            print "dead"
             return False
 
         # Animate the Enemy's frames
@@ -165,7 +170,7 @@ class Enemy(InstructionGroup):
         else:
             self.hurt_player_callback(5)
             self.dmg_rect_on_hit_callback()
-            return False
+            self.is_dead = True
 
         # Move Note Display to follow enemy
         s = self.size*self.scale_with_z()

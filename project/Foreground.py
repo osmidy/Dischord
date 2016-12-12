@@ -42,10 +42,11 @@ class Button(InstructionGroup):
         super(Button, self).__init__()
 
         self.color = color
-        self.rgb = color.rgb
-        
+
         # Set alpha
-        self.color.a = .65
+        alpha_lvl = 0.5
+        self.enabled_color = Color(rgba=(color.rgb[0], color.rgb[1], color.rgb[2], alpha_lvl))
+        self.disabled_color = Color(rgba=(0.5, 0.5, 0.5, alpha_lvl))
 
         self.add(self.color)
 
@@ -54,6 +55,11 @@ class Button(InstructionGroup):
 
         self.note = note
         self.is_enabled = True
+
+        self.note_texture = self.get_note_texture(note)
+        self.text_crrect = CRRectangle( texture=self.note_texture, crpos=(Window.width, y), crsize=(50, 50) )
+        self.add(Color(1,1,1))
+        self.add(self.text_crrect)
 
     def get_boundaries(self):
         lowerX, lowerY = self.crrect.pos
@@ -65,14 +71,20 @@ class Button(InstructionGroup):
     def get_note(self):
         return self.note
 
+    def get_note_texture(self, note):
+        name = note.get_name()
+        return Image(source='../data/'+name+'.png').texture
+
     def enable(self):
         self.is_enabled = True
-        self.color.rgb = self.rgb
+        n = self.enabled_color.rgba
+        self.color.rgba = (n[0],n[1],n[2],n[3])
         # TODO: get new note, make note text visible
 
     def disable(self):
         self.is_enabled = False
-        self.color.rgb = (.5, .5, .5) # Gray
+        n = self.disabled_color.rgba
+        self.color.rgba = (n[0],n[1],n[2],n[3])
         # TODO: make note text invisible, set note to None
 
     def on_update(self, dt):
@@ -106,8 +118,6 @@ class Foreground(InstructionGroup):
         	self.buttons.append(b)
         	self.add(b)
 
-
-        
     def on_update(self, dt):
         # As of now, should never be removed
         return True
