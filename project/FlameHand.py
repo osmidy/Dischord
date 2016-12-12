@@ -25,7 +25,7 @@ class FlameHand(LeapHand):
 
     def arm_weapon(self, btn):
         self.selectedButton = btn
-        self.color = btn.rgb
+        self.color = btn.enabled_color.rgb
         self.update_color()
         self.is_armed = True
 
