@@ -107,7 +107,7 @@ class ProgressionManager(InstructionGroup):
         self.progression[:] = []
 
     def get_chord_texture(self, scale_degree):
-        data_path = "../data_path/"
+        data_path = "../data/"
 
         romanNumeral = Chord.majorKeyRomanNumerals[scale_degree]
 
@@ -219,7 +219,7 @@ class Handler(InstructionGroup):
 
     def on_touch_down(self, touch):
         if touch.pos[0] >= Subwindow.width():
-            self.player.leftHand.set_pos(touch.pos)
+            self.player.rightHand.set_pos(touch.pos)
             self.player.attacking = True
             self.try_fire()
 
