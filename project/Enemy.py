@@ -60,7 +60,7 @@ class Note_Display(InstructionGroup):
 
 
 class Enemy(InstructionGroup):
-    def __init__(self, spawn_x, key = Notes.C, chord = Chords.MAJOR_FIVE, speed=None, audio_callback=None, hurt_player_callback=None):
+    def __init__(self, spawn_x, key = Notes.C, chord = Chords.MAJOR_FIVE, speed=None, audio_callback=None, hurt_player_callback=None, dmg_rect_on_hit_callback=None):
         super(Enemy, self).__init__()
 
         self.time = 0.0
@@ -79,9 +79,10 @@ class Enemy(InstructionGroup):
         if speed:
             self.speed = speed
         else:
-            self.speed = 1.0
+            self.speed = 10.0
 
         self.hurt_player_callback = hurt_player_callback
+        self.dmg_rect_on_hit_callback = dmg_rect_on_hit_callback
 
 
         #---------#
@@ -163,6 +164,7 @@ class Enemy(InstructionGroup):
             self.change3D(0, 0, s)
         else:
             self.hurt_player_callback(5)
+            self.dmg_rect_on_hit_callback()
             return False
 
         # Move Note Display to follow enemy
