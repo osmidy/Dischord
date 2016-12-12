@@ -88,35 +88,25 @@ class Chord:
         root = None
         size = len(pitches)
 
-        numDegrees = 7
+        for pitch in pitches:
+            copy = list(pitches)
+            copy.remove(pitch)
 
-        scaleDeg = sorted([MusicHelper.get_scale_degree(key, x % 12) for x in pitches])
+            for i in xrange(len(copy)):
+                if copy[i] < pitch:
+                    copy[i] += MusicHelper.octave
 
-        for i in xrange(size):
-            firstDeg = scaleDeg[i]
-            a = scaleDeg[(i + 1) % size]
-            b = scaleDeg[(i + 2) % size]
+            third = min(copy)
+            fifth = max(copy)
 
-            if a < firstDeg:
-                a += numDegrees
-            if b < firstDeg:
-                b += numDegrees
+            intervals = (third - pitch, fifth - pitch)
 
-            thirdDeg = None
-            fifthDeg = None
-            if a < b:
-                thirdDeg = a
-                fifthDeg = b
-            else:
-                thirdDeg = b
-                fifthDeg = a
-
-            intervals = (thirdDeg - firstDeg, fifthDeg - firstDeg)
-
-            if intervals == Chord.scaleDegreeIntervals:
-                chordType = Chord.majorChord # Incorrect, but not used if not dissonant
-                root = firstDeg
-                break
+            if intervals == Chord.majorIntervals:
+                return Chord.majorChord, pitch
+            elif intervals == Chord.minorIntervals:
+                return Chord.minorChord, pitch
+            elif intervals == Chord.diminishedIntervals:
+                return Chord.diminishedChord, pitch
 
         return chordType, root
 

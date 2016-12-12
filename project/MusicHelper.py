@@ -30,8 +30,8 @@ class MusicHelper(object):
         tonic = key.get_pitch()
         newPitch = pitch
 
-        while newPitch < tonic:
-            newPitch += MusicHelper.octave
+        # while newPitch < tonic:
+        #     newPitch += MusicHelper.octave
 
         dist = newPitch - tonic
         return MusicHelper.tonicDistanceScaleDegreeMap[dist]

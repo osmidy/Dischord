@@ -347,7 +347,7 @@ class Handler(InstructionGroup):
             if enemyKilled:
                 chord = self.target.resolvedPitches
                 chordType, root = Chord.get_chord_type(self.key, chord)
-                scaleDeg = root #MusicHelper.get_scale_degree(self.key, root)
+                scaleDeg = MusicHelper.get_scale_degree(self.key, root)
                 
                 if not self.tonalFlowChart.is_valid_progression(scaleDeg, self.PM.prev_scale_degree):
                     self.PM.clear()
