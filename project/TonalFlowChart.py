@@ -22,25 +22,37 @@ class Chord:
 
     def __init__(self, key):
         self.key = key
+        self.pitches = []
+
+        pitchesInKey = sorted([x + key.get_pitch() for x in MusicHelper.scaleDegreeTonicDistance.values()])
+        size = len(pitchesInKey)
+
+        pitch = random.choice(pitchesInKey)
+
+        idx = pitchesInKey.index(pitch)
         
-        # Generate chord
-        tonicDist = random.choice(MusicHelper.scaleDegreeTonicDistance.values())
-        pitch = key.get_pitch() + tonicDist
+        aboveNotes = [ pitchesInKey[(x % size)] for x in xrange(idx+1, idx +4) ]
+        abovePitch = random.choice(aboveNotes)
+        aboveIndex = aboveNotes.index(abovePitch)
+        print aboveIndex
+        if abovePitch < pitch:
+            abovePitch += MusicHelper.octave
+        
+        while True:
+            belowNotes = [ pitchesInKey[(x % size)] for x in xrange(idx-1, idx-4, -1)]
+            belowNotes.pop(aboveIndex)
+            belowPitch = random.choice(belowNotes)
 
-        abovePitch = pitch + random.choice(MusicHelper.scaleDegreeTonicDistance.values())
-        belowPitch = pitch + random.choice(MusicHelper.scaleDegreeTonicDistance.values()) - MusicHelper.octave
+            if belowPitch >= pitch:
+                belowPitch -= MusicHelper.octave
+            
+            self.pitches = [belowPitch, pitch, abovePitch]
+            if Chord.is_valid_chord(self.key, self.pitches):
+                print "VALID"
+                continue
 
-        # Ensure we can actually resolve with one shot - avoid two major seconds or perfect fourths both above and below pitch
-        aboveDiff = abovePitch - pitch
-        belowDiff = pitch - belowPitch
-        while (aboveDiff == 2 and belowDiff == 2) or (aboveDiff == 5 and belowDiff == 5):
-            abovePitch = pitch + random.choice(MusicHelper.scaleDegreeTonicDistance.values())
-            belowPitch = pitch + random.choice(MusicHelper.scaleDegreeTonicDistance.values()) - MusicHelper.octave
-
-            aboveDiff = abovePitch - pitch
-            belowDiff = pitch - belowPitch
-
-        self.pitches = [pitch, abovePitch, belowPitch]
+            if (abovePitch - pitch) != (pitch - belowPitch):
+                break
 
         self.chord_type = Chord.get_chord_type(self.pitches)
 
@@ -54,7 +66,7 @@ class Chord:
         if chord_type == Chord.dissonantChord:
             return False
 
-        dist = root - key
+        dist = root - key.get_pitch()
         if dist in MusicHelper.tonicDistanceScaleDegreeMap:
             scaleDeg = MusicHelper.tonicDistanceScaleDegreeMap[dist]
             return True
@@ -71,12 +83,12 @@ class Chord:
         chordType = Chord.dissonantChord
         root = None
 
-        for pitch in pitches:
-            root = pitch
+        size = len(pitches)
 
-            copy = list(pitches)
-            copy.remove(pitch)
-            third, fifth = copy
+        for i in xrange(size):
+            pitch = pitches[i]
+
+            third, fifth = pitches[(i+1) % size], pitches[(i+2) % size]
 
             if third <= pitch:
                 third += MusicHelper.octave
@@ -84,18 +96,19 @@ class Chord:
                 fifth += MusicHelper.octave
 
             intervals = (third - pitch, fifth - pitch)
+            print intervals
 
             if (intervals == Chord.majorIntervals):
-                chord = Chord.majorChord
+                chordType = Chord.majorChord
                 root = pitch
             elif (intervals == Chord.minorIntervals):
-                chord = Chord.minorChord
+                chordType = Chord.minorChord
                 root = pitch
             elif (intervals == Chord.diminishedIntervals):
-                chord = Chord.diminishedChord
+                chordType = Chord.diminishedChord
                 root = pitch
 
-            return chordType, root
+        return chordType, root
 
 # '''
 # Encapsulates the logic of to determine valid chord

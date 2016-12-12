@@ -73,7 +73,6 @@ class Button(InstructionGroup):
 
     def get_note_texture(self, note):
         name = note.get_name()
-        print name
         return Image(source='../data/'+name+'.png').texture
 
     def enable(self):

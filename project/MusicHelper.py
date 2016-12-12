@@ -33,7 +33,6 @@ class MusicHelper(object):
 
     @staticmethod
     def get_scale_name(key, pitch):
-        print "KEY: " + key.get_name()
         note = Note.pitch_to_note(pitch, key)
         return note.get_name()
 
