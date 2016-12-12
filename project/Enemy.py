@@ -44,7 +44,6 @@ class Note_Display(InstructionGroup):
         self.notes = []
         for i in xrange(self.num_notes):
             chordName = MusicHelper.get_scale_name(key, self.chord[i])
-            print chordName
             texture = self.get_texture(chordName)
             self.add( CBRectangle(texture=texture, cbpos=(x[i],y_top+5), cbsize=(25,25)) )
 
@@ -81,7 +80,7 @@ class Enemy(InstructionGroup):
 
         self.size = np.array((200,380))*Window.height/600
 
-        self.speed = speed*3
+        self.speed = speed*9
 
         # Callback Functions
         self.hurt_player_callback = hurt_player_callback
@@ -165,7 +164,6 @@ class Enemy(InstructionGroup):
         # Check if enemy is dead, and return false immediately if so
         if self.is_dead:
             self.remove_sound(self.seq)
-            print "dead"
             return False
 
         # Animate the Enemy's frames
