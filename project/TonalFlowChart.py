@@ -28,14 +28,14 @@ class Chord:
         pitch = key.get_pitch() + tonicDist
 
         abovePitch = pitch + random.choice(MusicHelper.scaleDegreeTonicDistance.values())
-        belowPitch = pitch - random.choice(MusicHelper.scaleDegreeTonicDistance.values())
+        belowPitch = pitch + random.choice(MusicHelper.scaleDegreeTonicDistance.values()) - MusicHelper.octave
 
         # Ensure we can actually resolve with one shot - avoid two major seconds or perfect fourths both above and below pitch
         aboveDiff = abovePitch - pitch
         belowDiff = pitch - belowPitch
         while (aboveDiff == 2 and belowDiff == 2) or (aboveDiff == 5 and belowDiff == 5):
             abovePitch = pitch + random.choice(MusicHelper.scaleDegreeTonicDistance.values())
-            belowPitch = pitch - random.choice(MusicHelper.scaleDegreeTonicDistance.values())
+            belowPitch = pitch + random.choice(MusicHelper.scaleDegreeTonicDistance.values()) - MusicHelper.octave
 
             aboveDiff = abovePitch - pitch
             belowDiff = pitch - belowPitch
