@@ -157,7 +157,7 @@ class AudioController(object):
         seq = NoteSequencer(self.sched, self.synth, channel = next_open_channel, patch = (0, 35))
         self.sequencers.append(seq)
         self.occupied_channels.append(next_open_channel)
-        rhythm = ( (240*2,pitches), (480*2,[0]), (240*2,pitches), (240*2*4,[0]) )
+        rhythm = ( (240,pitches), (240,[0]), (240,pitches), (240*2*4,[0]) )
         seq.set_notes(rhythm, True)
         seq.start()
 
