@@ -28,7 +28,12 @@ class MusicHelper(object):
     @staticmethod
     def get_scale_degree(key, pitch):
         tonic = key.get_pitch()
-        dist = pitch - tonic
+        newPitch = pitch
+
+        while newPitch < tonic:
+            newPitch += MusicHelper.octave
+
+        dist = newPitch - tonic
         return MusicHelper.tonicDistanceScaleDegreeMap[dist]
 
     @staticmethod

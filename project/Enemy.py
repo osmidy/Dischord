@@ -216,7 +216,7 @@ class Enemy(InstructionGroup):
 
         idx = self.dissonantPitches.index(minPitch)
         comparisonPitches = list(self.dissonantPitches)
-        comparisonPitches[idx] = minPitch
+        comparisonPitches[idx] = pitch
 
         playbackPitches = comparisonPitches
         killed = False

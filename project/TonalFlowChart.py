@@ -12,8 +12,10 @@ class Chord:
     dissonantChord = "dissonantBruh"
 
     majorIntervals = (4, 7)
-    minorIntervals = (3, 4)
-    diminishedIntervals = (3, 3)
+    minorIntervals = (3, 7)
+    diminishedIntervals = (3, 6)
+
+    scaleDegreeIntervals = (2, 4)
 
     # Number of semitones above root for third and fifth of the chord, respectively
     chordIntervalSize = {majorChord: majorIntervals, minorChord: minorIntervals, diminishedChord: diminishedIntervals}
@@ -34,7 +36,6 @@ class Chord:
         aboveNotes = [ pitchesInKey[(x % size)] for x in xrange(idx+1, idx +4) ]
         abovePitch = random.choice(aboveNotes)
         aboveIndex = aboveNotes.index(abovePitch)
-        print aboveIndex
         if abovePitch < pitch:
             abovePitch += MusicHelper.octave
         
@@ -48,13 +49,12 @@ class Chord:
             
             self.pitches = [belowPitch, pitch, abovePitch]
             if Chord.is_valid_chord(self.key, self.pitches):
-                print "VALID"
                 continue
 
             if (abovePitch - pitch) != (pitch - belowPitch):
                 break
 
-        self.chord_type = Chord.get_chord_type(self.pitches)
+        self.chord_type = Chord.get_chord_type(self.key, self.pitches)
 
 
     def get_chord_intervals(self):
@@ -62,14 +62,18 @@ class Chord:
 
     @staticmethod
     def is_valid_chord(key, pitches):
-        chord_type, root = Chord.get_chord_type(pitches)
+        chord_type, root = Chord.get_chord_type(key, pitches)
         if chord_type == Chord.dissonantChord:
             return False
 
-        dist = root - key.get_pitch()
-        if dist in MusicHelper.tonicDistanceScaleDegreeMap:
-            scaleDeg = MusicHelper.tonicDistanceScaleDegreeMap[dist]
-            return True
+        return True
+
+        # dist = root - key.get_pitch()
+        # if dist in MusicHelper.tonicDistanceScaleDegreeMap:
+        #     scaleDeg = MusicHelper.tonicDistanceScaleDegreeMap[dist]
+        #     return True
+        # else:
+        #     return False
 
     @staticmethod
     def get_roman_numeral(key, pitch):
@@ -78,35 +82,41 @@ class Chord:
 
 
     @staticmethod
-    def get_chord_type(pitches):
+    def get_chord_type(key, pitches):
 
         chordType = Chord.dissonantChord
         root = None
-
         size = len(pitches)
 
+        numDegrees = 7
+
+        scaleDeg = sorted([MusicHelper.get_scale_degree(key, x % 12) for x in pitches])
+
         for i in xrange(size):
-            pitch = pitches[i]
+            firstDeg = scaleDeg[i]
+            a = scaleDeg[(i + 1) % size]
+            b = scaleDeg[(i + 2) % size]
 
-            third, fifth = pitches[(i+1) % size], pitches[(i+2) % size]
+            if a < firstDeg:
+                a += numDegrees
+            if b < firstDeg:
+                b += numDegrees
 
-            if third <= pitch:
-                third += MusicHelper.octave
-            if fifth <= pitch:
-                fifth += MusicHelper.octave
+            thirdDeg = None
+            fifthDeg = None
+            if a < b:
+                thirdDeg = a
+                fifthDeg = b
+            else:
+                thirdDeg = b
+                fifthDeg = a
 
-            intervals = (third - pitch, fifth - pitch)
-            print intervals
+            intervals = (thirdDeg - firstDeg, fifthDeg - firstDeg)
 
-            if (intervals == Chord.majorIntervals):
-                chordType = Chord.majorChord
-                root = pitch
-            elif (intervals == Chord.minorIntervals):
-                chordType = Chord.minorChord
-                root = pitch
-            elif (intervals == Chord.diminishedIntervals):
-                chordType = Chord.diminishedChord
-                root = pitch
+            if intervals == Chord.scaleDegreeIntervals:
+                chordType = Chord.majorChord # Incorrect, but not used if not dissonant
+                root = firstDeg
+                break
 
         return chordType, root
 
