@@ -82,6 +82,8 @@ class Button(InstructionGroup):
             if note in all_notes:
                 all_notes.remove(note)
         self.note = choice(all_notes)
+        self.note_texture = self.get_note_texture(self.note)
+        self.text_crrect.texture = self.note_texture
 
         # while True:
         #     note = choice(notes)

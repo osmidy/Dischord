@@ -43,10 +43,13 @@ class Game(BaseWidget):
         self.add_widget(self.HUD)
 
     def on_touch_down(self, touch):
-        pass
+        self.handler.on_touch_down(touch)
 
     def on_touch_up(self, touch):
-        pass
+        self.handler.on_touch_up(touch)
+
+    def on_touch_move(self, touch):
+        self.handler.on_touch_move(touch)
 
     def on_update(self):
     	self.handler.on_update()

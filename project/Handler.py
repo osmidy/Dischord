@@ -40,7 +40,7 @@ bps = 10.0/9.0
 data = []
 for i in xrange(2,60,4):
     time = i*bps
-    num_enemies = randint(0,1)
+    num_enemies = randint(1,1)
     existing_x_positions = []
     while num_enemies > 0:
         x_pos = randint(-600,600)
@@ -113,7 +113,6 @@ class ProgressionManager(InstructionGroup):
 
         #get string with name of chord
         name = data_path + romanNumeral
-        print name
         if name.isupper():
             return Image(source=name+'.png').texture
         else:
@@ -217,6 +216,23 @@ class Handler(InstructionGroup):
 
     def include_audio(self, audio_controller):
         self.audio_controller = audio_controller
+
+    def on_touch_down(self, touch):
+        if touch.pos[0] >= Subwindow.width():
+            self.player.leftHand.set_pos(touch.pos)
+            self.player.attacking = True
+            self.try_fire()
+
+
+    def on_touch_up(self, touch):
+        if touch.pos[0] >= Subwindow.width():
+            self.player.attacking = False
+
+    def on_touch_move(self, touch):
+        if touch.pos[0] < Subwindow.width():
+            self.player.leftHand.set_pos(touch.pos)
+        else:
+            self.player.rightHand.set_pos(touch.pos)
         
     def on_update(self):
         self.audio_controller.on_update()
