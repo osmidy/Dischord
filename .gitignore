@@ -87,3 +87,6 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Fluid Synth
+data/FluidR3_GM.sf2

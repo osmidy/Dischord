@@ -152,7 +152,6 @@ class Enemy(InstructionGroup):
 
         # Animate the Enemy's frames
         self.anim_time -= dt
-        print self.anim_time
         if self.anim_time <= 0.0:
             self.anim_time = self.anim_switch_time + self.anim_time
             self.anim_frame += 1

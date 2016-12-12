@@ -43,6 +43,8 @@ class Player(InstructionGroup):
         self.leftHand = Crosshair()
         self.rightHand = FlameHand()
 
+        self.attacking = False
+
         self.add(self.leftHand)
         self.add(self.rightHand)
 
@@ -77,19 +79,31 @@ class Player(InstructionGroup):
         self.rightHand.unarm_weapon()
 
     def is_attacking(self):
-        hand = self.rightHand.get_hand()
-        if not hand:
-            return False
-        
-        y = hand.palm_normal.y
-        return abs(1 - y) <= .05
+        return self.attacking
         
     def on_update(self, dt):
         if self.controller.is_connected:
             frame = self.controller.frame()
             self.set_hands(frame.hands)
+            
             if self.rightHand:
                 self.rightHand.set_brightness()
+                
+                # Update attack state
+                hand = self.rightHand.get_hand()
+                if not hand:
+                    return
+
+                y = hand.palm_normal.y
+                print y
+
+                if not self.attacking and y >= .95:
+                    self.attacking = True
+                elif self.attacking and y <= .5:
+                    self.attacking = False
+            else:
+                # Can't be attacking if no right hand
+                self.attacking = False
 
         # Should never be removed from the game
         return True
