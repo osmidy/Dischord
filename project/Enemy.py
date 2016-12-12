@@ -186,7 +186,6 @@ class Enemy(InstructionGroup):
             self.change3D(0, 0, s)
         else:
             self.hurt_player_callback(5)
-            self.clear_prog()
             self.dmg_rect_on_hit_callback()
             self.is_dead = True
 
@@ -227,6 +226,8 @@ class Enemy(InstructionGroup):
             self.resolvedPitches = comparisonPitches
             self.is_dead = True
             killed = True
+        else:
+            self.clear_prog()
 
         if self.audio_callback:
             self.audio_callback(playbackPitches)

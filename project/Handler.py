@@ -93,7 +93,7 @@ class ProgressionManager(InstructionGroup):
 
     def add(self, scale_degree):
         x = 50 + len(self.progression)*50
-        y = Window.height - 87
+        y = Window.height - 200
         txt = self.get_chord_texture(scale_degree)
         display_rect = Rectangle( texture=txt, pos=(x,y) , size=(45,45) )
         tup = (scale_degree, display_rect)
@@ -221,7 +221,7 @@ class Handler(InstructionGroup):
         if touch.pos[0] >= Subwindow.width():
             self.player.rightHand.set_pos(touch.pos)
             self.player.attacking = True
-            self.try_fire()
+            self.try_fire() # TODO: make separte touch_fire()
 
 
     def on_touch_up(self, touch):
@@ -372,6 +372,7 @@ class Handler(InstructionGroup):
 
                 # Increment player streak
                 self.player.set_score_mult(self.PM.length())
+                self.player.score_up()
 
     def ccw(self, A,B,C):
         return (C[1]-A[1]) * (B[0]-A[0]) > (B[1]-A[1]) * (C[0]-A[0])
@@ -385,7 +386,7 @@ class Handler(InstructionGroup):
         remove_list = []
         for e in self.enemy_data:
             if e[0] <= time:
-                E = Enemy(e[1], self.key, audio_callback=self.play_enemy_sound, clear_prog=self.PM.clear(), hurt_player_callback=self.player.decrement_health, dmg_rect_on_hit_callback=self.dmg_rect.on_hit, add_sound=self.audio_controller.add_enemy_sound, remove_sound=self.audio_controller.remove_enemy_sound)
+                E = Enemy(e[1], self.key, audio_callback = self.play_enemy_sound, clear_prog = self.PM.clear, hurt_player_callback=self.player.decrement_health, dmg_rect_on_hit_callback=self.dmg_rect.on_hit, add_sound=self.audio_controller.add_enemy_sound, remove_sound=self.audio_controller.remove_enemy_sound)
                 self.enemies.add(E)
                 remove_list.append(e)
                 
