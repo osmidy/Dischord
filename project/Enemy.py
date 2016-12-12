@@ -81,7 +81,7 @@ class Enemy(InstructionGroup):
 
         self.size = np.array((200,380))*Window.height/600
 
-        self.speed = speed*3
+        self.speed = speed
 
         # Callback Functions
         self.hurt_player_callback = hurt_player_callback
