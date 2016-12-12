@@ -1,7 +1,7 @@
 from kivy.config import Config
-Config.set('graphics', 'height', '720')
-Config.set('graphics', 'width', '1080')
-#Config.set('graphics', 'fullscreen', 'auto')
+#Config.set('graphics', 'height', '720')
+#Config.set('graphics', 'width', '1080')
+Config.set('graphics', 'fullscreen', 'auto')
 
 
 import sys
