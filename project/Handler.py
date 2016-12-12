@@ -301,8 +301,8 @@ class Handler(InstructionGroup):
             if e[0] <= time:
                 E = Enemy(e[1], audio_callback=self.play_enemy_sound, hurt_player_callback=self.player.decrement_health, dmg_rect_on_hit_callback=self.dmg_rect.on_hit)
                 self.enemies.add(E)
-                #self.add(E)
                 remove_list.append(e)
+                
         for r in remove_list:
             self.enemy_data.remove(r)
 

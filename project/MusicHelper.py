@@ -1,5 +1,28 @@
 import random
-from TonalFlowChart import *
+
+'''
+Class handling logic for storing and retrieving musical notes
+and MIDI pitches
+'''
+class MusicHelper(object):
+
+    octave = 12
+
+    scaleDegTonicDistance = {1: 0,\
+                                2: 2,\
+                                3: 4,\
+                                4: 5,\
+                                5: 7,\
+                                6: 9,\
+                                7: 11}
+
+    tonicDistanceScaleDegreeMap = {0: 1,\
+                                        2: 2,\
+                                        4: 3,\
+                                        5: 4,\
+                                        7: 5,\
+                                        9: 6,\
+                                        11: 7}
 
 '''
 Represenation of musical notes/midi pitches
@@ -52,70 +75,24 @@ class Notes:
     B = Note("B", 71)
     C_FLAT = Note("Cb", 71)
 
-'''
-Class handling logic for storing and retrieving musical notes
-and MIDI pitches
-'''
-class MusicHelper(object):
-
-    octave = 12
-
-    # TODO: mechanism for supporting other keys; enharmonic notes
-    noteToMidi = {'c': 60, 'd': 62, 'e': 64, 'f': 65, 'g': 67, 'a': 69, 'b': 71}
-
-    # Given a certain chord type, the number of semitones its root is above the tonic
-    tonicSemitoneDistance = {Chords.MAJOR_ONE: 0,\
-                                Chords.MINOR_TWO: 2,\
-                                Chords.MINOR_THREE: 4,\
-                                Chords.MAJOR_FOUR: 5,\
-                                Chords.MAJOR_FIVE: 7,\
-                                Chords.MINOR_SIX: 9,\
-                                Chords.DIMINISHED_SEVEN: 11,\
-
-                                Chords.MINOR_ONE: 0,\
-                                Chords.DIMINISHED_TWO: 2,\
-                                Chords.MAJOR_THREE: 3,\
-                                Chords.MINOR_FOUR : 5,\
-                                Chords.MINOR_FIVE: 7,\
-                                Chords.MAJOR_SIX : 8,\
-                                Chords.MAJOR_SEVEN: 10}
-
     '''
-    Builds the specified midi chord in the given key. Returns a list of the 
-    three (or more) pitches
+    Get harmonically correct form of the Note for pitch in the given key
     '''
     @staticmethod
-    def get_proper_chord(key, chord):
-        pitch = key.get_pitch()
+    def pitch_to_note(pitch, key):
+        pitchToNoteSharp = {0: Notes.B_SHARP, 3: Notes.D_SHARP, 5: Notes.E_SHARP, 6: Notes.F_SHARP, 8: Notes.G_SHARP, 10: Notes.A_SHARP}
+        pitchToNoteNatural = {0: Notes.C, 2: Notes.D, 4: Notes.E, 5: Notes.F, 7: Notes.G, 9: Notes.A, 11: Notes.B}
+        pitchToNoteFlat = {1: Notes.D_FLAT, 3: Notes.E_FLAT, 4: Notes.F_FLAT, 6: Notes.G_FLAT, 8: Notes.A_FLAT, 10: Notes.B_FLAT, 11: Notes.C_FLAT}
 
-        rootDiff = MusicHelper.tonicSemitoneDistance[chord]
-        root = pitch + rootDiff
+        # See if key is sharp or flat
+        isSharp = False
+        if "#" in key.get_name():
+            isSharp = True
 
-        thirdDiff, fifthDiff = chord.get_chord_intervals()
-        third = pitch + thirdDiff
-        fifth = pitch + fifthDiff
-
-        return [root, third, fifth]
-
-
-    '''
-    Returns a dissonant form of the given proper chord as a list of notes in the chord,
-    and the index of the wrong note.
-    '''
-    @staticmethod
-    def get_dissonant_chord(properChord):
-        replacedNote = random.choice(properChord)
-
-        wrongNote = None        
-        choiceRange = xrange(replacedNote - 4, replacedNote + 4)
-        
-        while True:
-            wrongNote = random.choice(choiceRange)
-            if wrongNote not in properChord:
-                break
-
-        dissonantChord = list(properChord)
-        noteIndex = properChord.index(replacedNote)
-        dissonantChord[noteIndex] = wrongNote
-
-        return dissonantChord, noteIndex
+        basePitch = pitch % 12
+        if isSharp and basePitch in pitchToNoteSharp:
+            return pitchToNoteSharp[basePitch]
+        elif basePitch in pitchToNoteFlat:
+            return pitchToNoteFlat[basePitch]
+        else:
+            return pitchToNoteNatural

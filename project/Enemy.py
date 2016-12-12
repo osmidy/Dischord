@@ -19,6 +19,7 @@ from kivy.graphics import PushMatrix, PopMatrix, Translate, Scale, Rotate
 from kivy.config import Config
 
 from MusicHelper import *
+from TonalFlowChart import *
 
 from random import random, randint, choice
 import numpy as np
@@ -60,7 +61,7 @@ class Note_Display(InstructionGroup):
 
 
 class Enemy(InstructionGroup):
-    def __init__(self, spawn_x, key = Notes.C, chord = Chords.MAJOR_FIVE, speed=None, audio_callback=None, hurt_player_callback=None, dmg_rect_on_hit_callback=None):
+    def __init__(self, spawn_x, key = Notes.C, speed=1.0, audio_callback=None, hurt_player_callback=None, dmg_rect_on_hit_callback=None):
         super(Enemy, self).__init__()
 
         self.time = 0.0
@@ -76,10 +77,7 @@ class Enemy(InstructionGroup):
 
         self.size = np.array((200,380))*Window.height/600
 
-        if speed:
-            self.speed = speed
-        else:
-            self.speed = 1.0
+        self.speed = speed
 
         self.hurt_player_callback = hurt_player_callback
         self.dmg_rect_on_hit_callback = dmg_rect_on_hit_callback
@@ -108,7 +106,7 @@ class Enemy(InstructionGroup):
         self.add(self.cbrect)
 
         # Note Display
-        self.ND = Note_Display(key, chord, self.pos2D[0], self.pos2D[1]+s[1])
+        self.ND = Note_Display(key, None, self.pos2D[0], self.pos2D[1]+s[1])
         self.add(self.ND)
 
         # self.color = Color(1,0.1,0.1)
@@ -132,9 +130,9 @@ class Enemy(InstructionGroup):
         # Audio & Music #
         #---------------#
 
-        # get midi pitch numbers
-        self.correctPitches = MusicHelper.get_proper_chord(key, chord)
-        self.dissonantPitches, self.correctionIndex = MusicHelper.get_dissonant_chord(self.correctPitches)
+        self.key = key
+        self.chord = Chord(key)
+        self.dissonantPitches = self.chord.pitches
 
         self.audio_callback = audio_callback
 
@@ -184,19 +182,28 @@ class Enemy(InstructionGroup):
     # Called immediately before dying when an enemy is hit by a player
     # Return True if successfully killed by the player, else False
     def on_hit(self, pitch):
-        comparisonPitches = self.dissonantPitches[:self.correctionIndex] + [pitch] + self.dissonantPitches[self.correctionIndex:]
+        # Sub in the pitch for the note is closest to in the chord
+        minDist = float("inf")
+        minPitch = None
+        for chordPitch in self.dissonantPitches:
+            dist = abs(pitch - chordPitch)
+            if dist < minDist:
+                minDist = dist
+                minPitch = chordPitch
 
-        pitches = None
+        idx = self.dissonantPitches.index(minPitch)
+        comparisonPitches = list(self.dissonantPitches)
+        comparisonPitches[idx] = minPitch
+
+        playbackPitches = comparisonPitches
         killed = False
-        if comparisonPitches == self.correctPitches:
-            pitches = self.correctPitches
+
+        if Chord.is_valid_chord(self.key, comparisonPitches):
             self.is_dead = True
             killed = True
-        else:
-            pitches = comparisonPitches
 
         if self.audio_callback:
-            self.audio_callback(pitches)
+            self.audio_callback(playbackPitches)
 
         return killed
         
