@@ -89,6 +89,8 @@ class ProgressionManager(InstructionGroup):
         self.progression = []
         super(ProgressionManager, self).add(Color(0.6,0.6,0.8))
 
+        self.prev_scale_degree = 1
+
     def add(self, scale_degree):
         x = 50 + len(self.progression)*50
         y = Window.height - 87
@@ -97,6 +99,7 @@ class ProgressionManager(InstructionGroup):
         tup = (scale_degree, display_rect)
         super(ProgressionManager, self).add(display_rect)
         self.progression.append(tup)
+        self.prev_scale_degree = scale_degree
 
     def clear(self):
         for c in self.progression:
@@ -110,6 +113,7 @@ class ProgressionManager(InstructionGroup):
 
         #get string with name of chord
         name = data_path + romanNumeral
+        print name
         if name.isupper():
             return Image(source=name+'.png').texture
         else:
@@ -320,10 +324,10 @@ class Handler(InstructionGroup):
 
             if enemyKilled:
                 chord = self.target.resolvedPitches
-                chordType, root = Chord.get_chord_type(chord)
+                chordType, root = Chord.get_chord_type(self.key, chord)
                 scaleDeg = MusicHelper.get_scale_degree(self.key, root)
                 
-                if not self.tonalFlowChart.is_valid_progression(scaleDeg):
+                if not self.tonalFlowChart.is_valid_progression(scaleDeg, self.PM.prev_scale_degree):
                     self.PM.clear()
                 self.PM.add(scaleDeg)
 

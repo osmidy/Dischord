@@ -14,9 +14,8 @@ and converting them for use within the Kivy framework.
 '''
 
 class LeapHelper(object):
-    ibox_height = 200 # millimeters
-    pixel_to_mm_ratio_vertical = Window.height / 200
-    pixel_to_mm_ratio_horizontal = Window.width / 350
+    pixel_to_mm_ratio_vertical = Window.height / 230
+    pixel_to_mm_ratio_horizontal = Window.width / 250
     
     '''
     Convert Leap millimeter measurements to kivy pixel coordinates.
@@ -27,7 +26,7 @@ class LeapHelper(object):
     def position_as_pixels(hand):
         handX, handY = hand.palm_position.x, hand.palm_position.y
         # TODO: Use depth to get size or something...       
-        vertical_buffer = 200 # bottom out range of hand motion at 200 mm above Leap motion surface
+        vertical_buffer = 400 # bottom out range of hand motion at 200 mm above Leap motion surface
                 
         # Get pixels
         x = LeapHelper.pixel_to_mm_ratio_horizontal * handX

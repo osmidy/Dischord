@@ -134,7 +134,8 @@ class TonalFlowChart:
     Note: since the one chord can go to anything, this is left out of the mappings.
     We explicitly check for this case in the functions of the class.
     '''
-    nextChordMapMajor = {2: (5, 7),\
+    nextChordMapMajor = {1:(2, 3, 4, 5, 6, 7),\
+                         2: (5, 7),\
                          3: (6, 7),\
                          4: (1, 2, 5),\
                          5: (1, 7, 6),\
@@ -157,15 +158,15 @@ class TonalFlowChart:
         else:
             self.chartMap = TonalFlowChart.nextChordMapMinor
 
-    def is_valid_progression(self, scale_degree):
-        return chord == TonalFlowChart.SCALE_DEG_ONE  or scale_degree in self.chartMap[chord]
+    def is_valid_progression(self, scale_degree, prev_degree):
+        return scale_degree == TonalFlowChart.SCALE_DEG_ONE  or scale_degree in self.chartMap[prev_degree]
 
     def get_next_chords(self, scale_degree):
-        chordIsOne = chord == TonalFlowChart.SCALE_DEG_ONE
+        chordIsOne = scale_degree == TonalFlowChart.SCALE_DEG_ONE
         
         if chordIsOne and self.chart_type == TonalFlowChart.MAJOR:
             return xrange(2, 8)
         else:
-            return self.chartMap[chord]
+            return self.chartMap[scale_degree]
 
     # TODO: expand for mode mixture; check parallel chartMap
