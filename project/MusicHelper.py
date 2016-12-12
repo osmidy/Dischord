@@ -121,3 +121,37 @@ class Notes:
 
     B = Note("B", 71)
     C_FLAT = Note("Cb", 71)
+
+    '''
+    Get harmonically correct form of the Note for pitch in the given key
+    '''
+    @staticmethod
+    def pitch_to_note(pitch, key):
+        pitchToNoteSharp = {0: Notes.B_SHARP, 3: Notes.D_SHARP, 5: Notes.E_SHARP, 6: Notes.F_SHARP, 8: Notes.G_SHARP, 10: Notes.A_SHARP}
+        pitchToNoteNatural = {0: Notes.C, 2: Notes.D, 4: Notes.E, 5: Notes.F, 7: Notes.G, 9: Notes.A, 11: Notes.B}
+        pitchToNoteFlat = {1: Notes.D_FLAT, 3: Notes.E_FLAT, 4: Notes.F_FLAT, 6: Notes.G_FLAT, 8: Notes.A_FLAT, 10: Notes.B_FLAT, 11: Notes.C_FLAT}
+
+        # See if key is sharp or flat
+        isSharp = False
+        isFlat = False
+        if "#" in key.get_name():
+            isSharp = True
+        elif "b" in key.get_name():
+            isFlat = True
+
+        basePitch = pitch % 12
+        if isSharp and basePitch in pitchToNoteSharp:
+            return pitchToNoteSharp[basePitch]
+        elif isFlat and basePitch in pitchToNoteFlat:
+            return pitchToNoteFlat[basePitch]
+        else:
+            return pitchToNoteNatural[basePitch]
+
+    @staticmethod
+    def get_notes_in_key(key):
+        tonic_pitch = key.get_pitch()
+        notes = []
+        for i in xrange(7):
+            pitch = tonic_pitch + MusicHelper.scaleDegreeTonicDistance[i+1]
+            notes.append(Notes.pitch_to_note(pitch,key))
+        return notes
