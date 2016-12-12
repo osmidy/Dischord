@@ -218,3 +218,8 @@ class Cursor3D(InstructionGroup):
 
     def get_screen_xy(self) :
         return self.cursor.cpos
+
+class Subwindow(object):
+    @staticmethod
+    def width():
+        return Window.width*0.9
