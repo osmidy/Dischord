@@ -95,7 +95,6 @@ class Player(InstructionGroup):
                     return
 
                 y = hand.palm_normal.y
-                print y
 
                 if not self.attacking and y >= .95:
                     self.attacking = True

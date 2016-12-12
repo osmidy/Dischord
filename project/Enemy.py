@@ -79,7 +79,7 @@ class Enemy(InstructionGroup):
         if speed:
             self.speed = speed
         else:
-            self.speed = 10.0
+            self.speed = 1.0
 
         self.hurt_player_callback = hurt_player_callback
         self.dmg_rect_on_hit_callback = dmg_rect_on_hit_callback
