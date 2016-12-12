@@ -50,6 +50,7 @@ class Game(BaseWidget):
 
     def on_update(self):
     	self.handler.on_update()
-        self.HUD.text = 'Health: %d\n' % self.handler.player.get_health()
+        self.HUD.text = 'Health: %d    ' % self.handler.player.get_health()
+        self.HUD.text += 'Num Enemies: %d' % len(self.handler.enemies.enemies)
 
 run(Game)

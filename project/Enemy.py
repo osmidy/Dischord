@@ -40,14 +40,17 @@ class Note_Display(InstructionGroup):
         self.num_notes = len(chord)
         #d = 40
         x = np.linspace(x_center-d,x_center+d,self.num_notes)
+        self.box = Rectangle(pos=(x[0]-15,y_top), size=(x[-1]-x[0]+30,35))
+        self.add(Color(rgba=(1,1,1,0.9)))
+        self.add(self.box)
 
         self.notes = []
         for i in xrange(self.num_notes):
             chordName = MusicHelper.get_scale_name(key, self.chord[i])
             texture = self.get_texture(chordName)
-            self.add( CBRectangle(texture=texture, cbpos=(x[i],y_top+5), cbsize=(25,25)) )
+            self.add_note( CBRectangle(texture=texture, cbpos=(x[i],y_top+5), cbsize=(25,25)) )
 
-    def add(self, note):
+    def add_note(self, note):
         super(Note_Display, self).add(note)
         self.notes.append(note)
 
@@ -61,6 +64,8 @@ class Note_Display(InstructionGroup):
         for i in xrange(len(self.notes)):
             self.notes[i].cbpos = ( x[i], y_top+5 )
             self.notes[i].cbsize = ( 25, 25 )
+            self.box.pos=(x[0]-15,y_top)
+            self.box.size=(x[-1]-x[0]+30,35)
 
 
 class Enemy(InstructionGroup):
@@ -68,9 +73,6 @@ class Enemy(InstructionGroup):
         super(Enemy, self).__init__()
 
         self.time = 0.0
-        self.anim_switch_time = 0.270
-        self.anim_time = self.anim_switch_time
-        self.anim_frame = 0
 
         # pos3D is 3D cartesian coords
         self.pos3D = [spawn_x,0,-D]
@@ -80,7 +82,7 @@ class Enemy(InstructionGroup):
 
         self.size = np.array((200,380))*Window.height/600
 
-        self.speed = speed*9
+        self.speed = speed
 
         # Callback Functions
         self.hurt_player_callback = hurt_player_callback
@@ -100,6 +102,10 @@ class Enemy(InstructionGroup):
         self.textures.append(self.texture_c)
         self.texture_d = self.texture.get_region(322,435,107,145);
         self.textures.append(self.texture_d)
+
+        self.anim_switch_time = 0.270
+        self.anim_time = self.anim_switch_time
+        self.anim_frame = randint(0,100)%len(self.textures)
 
 
         s = self.size*self.scale_with_z()

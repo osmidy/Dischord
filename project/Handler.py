@@ -34,8 +34,31 @@ import numpy as np
 
 #beat_per_sec
 bps = 10.0/9.0
-data = [(2*bps,0),(4*bps,-250),(6*bps,250),(8*bps,-400),(12*bps,0)]
+#data = [(2*bps,0),(4*bps,-250),(6*bps,250),(8*bps,-400),(12*bps,0)]
+#data = [(2*bps,0),(2*bps,-500),(4*bps,500),(4*bps,-250),(6*bps,250),(8*bps,-400),(12*bps,0)]
 #data = [(2*bps,0)]
+data = []
+for i in xrange(2,60,2):
+    time = i*bps
+    num_enemies = randint(0,2)
+    existing_x_positions = []
+    while num_enemies > 0:
+        x_pos = randint(-600,600)
+        cont = False
+        for x in existing_x_positions:
+            if abs(x-x_pos) <= 200:
+                cont = True
+                break;
+        if cont:
+            continue
+        else:
+            data.append((time,x_pos))
+            existing_x_positions.append(x_pos)
+            num_enemies -= 1
+
+print data
+
+
 
 class E_List(InstructionGroup):
     def __init__(self):
