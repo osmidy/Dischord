@@ -79,8 +79,10 @@ class ProgressionManager(InstructionGroup):
         self.progression[:] = []
 
     def get_chord_texture(self, chord):
+        data_path = "../data_path/"
+
         #get string with name of chord
-        name = chord.get_chord_name()
+        name = data_path + chord.get_chord_name()
         if name.isupper():
             return Image(source=name+'.png').texture
         else:

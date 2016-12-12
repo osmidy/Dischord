@@ -28,7 +28,7 @@ class Moon(InstructionGroup):
 	def __init__(self):
 		super(Moon, self).__init__()
 
-		self.texture = Image(source='moon.png').texture
+		self.texture = Image(source='../data/moon.png').texture
 		self.rect = CRectangle(texture=self.texture, cpos=(Window.width/2,Window.height-40), csize=(64,64))
 		self.add(Color(0.7,0.7,0.6))
 		self.add(self.rect)
@@ -53,7 +53,7 @@ class Backdrop(InstructionGroup):
 	def __init__(self):
 		super(Backdrop, self).__init__()
 
-		self.texture = Image(source='forest.png').texture
+		self.texture = Image(source='../data/forest.png').texture
 		self.rect = Rectangle(texture=self.texture, pos=(0,Window.height*0.6), size=(Window.width,Window.height*0.4))
 		self.add(Color(0.1,0.3,0.3))
 		self.add(self.rect)
@@ -69,7 +69,7 @@ class Ground(InstructionGroup):
 	def __init__(self):
 		super(Ground, self).__init__()
 
-		self.texture = Image(source='grass.png').texture
+		self.texture = Image(source='../data/grass.png').texture
 		self.rect = Rectangle( texture=self.texture, pos=(0,0), size=(Window.width,Window.height*0.6) )
 		self.add(Color(0.05,0.2,0.5))
 		self.add(self.rect)
@@ -81,7 +81,7 @@ class Sky(InstructionGroup):
 	def __init__(self):
 		super(Sky, self).__init__()
 
-		self.texture = Image(source='sky.png').texture
+		self.texture = Image(source='../data/sky.png').texture
 		self.rect = Rectangle( texture=self.texture, pos=(0,Window.height*0.6), size=(Window.width,Window.height*(1-0.6)) )
 		self.add(Color(0.2,0.1,0.2))
 		self.add(self.rect)
