@@ -62,16 +62,11 @@ class ProgressionManager(InstructionGroup):
 
         # list of tuples: (chord, display_rect)
         self.progression = []
-        super(ProgressionManager, self).add(Color(1,1,1))
-        self.add(Chords.MAJOR_ONE)
-        self.add(Chords.MAJOR_ONE)
-        self.add(Chords.MAJOR_ONE)
-        self.add(Chords.MAJOR_ONE)
-        self.add(Chords.MAJOR_ONE)
+        super(ProgressionManager, self).add(Color(0.6,0.6,0.8))
 
     def add(self, chord):
-        x = 75 + len(self.progression)*50
-        y = Window.height - 100
+        x = 50 + len(self.progression)*50
+        y = Window.height - 87
         txt = self.get_chord_texture(chord)
         display_rect = Rectangle( texture=txt, pos=(x,y) , size=(45,45) )
         tup = (chord, display_rect)
@@ -84,11 +79,52 @@ class ProgressionManager(InstructionGroup):
         self.progression[:] = []
 
     def get_chord_texture(self, chord):
-        #add code here to return proper texture based on chord
-        return Image(source='F.png').texture
+        #get string with name of chord
+        name = chord.get_chord_name()
+        if name.isupper():
+            return Image(source=name+'.png').texture
+        else:
+            return Image(source=name.upper()+'_.png').texture
 
     def on_update(self, dt):
         return True
+
+class Damage_Rect(InstructionGroup):
+    def __init__(self):
+        super(Damage_Rect, self).__init__()
+
+        self.was_hit = False
+        self.isfading = False
+
+        self.damage_rect = Rectangle(pos=(0,0), size=(Window.width,Window.height))
+        self.damage_color = Color(rgba=(1,0,0,0.0))
+
+        self.add(self.damage_color)
+        self.add(self.damage_rect)
+
+    def on_hit(self):
+        self.was_hit = True
+
+    def flash_rect(self, inc):
+        a = self.damage_color.rgba[3]
+        if a >= 0.55:
+            self.was_hit = False
+            self.isfading = True
+        elif a <= 0.0:
+            self.damage_color.rgba = (1,0,0,0.0)
+            self.isfading = False
+
+        if self.was_hit:
+            self.damage_color.rgba = (1, 0, 0, a+inc*2)
+        else:
+            self.damage_color.rgba = (1, 0, 0, a-inc)
+
+    def on_update(self, dt):
+        if self.was_hit or self.isfading:
+            self.flash_rect(0.07)
+
+        return True
+
 
 
 class Handler(InstructionGroup):
@@ -103,6 +139,9 @@ class Handler(InstructionGroup):
         # Handles and displays progressions near top of screen
         self.PM = ProgressionManager()
 
+        # Displays Damage rectangle when player is hit
+        self.dmg_rect = Damage_Rect()
+
         # List of all objects in the game to be drawn
         self.objects = []
 
@@ -114,11 +153,14 @@ class Handler(InstructionGroup):
         self.foreground = Foreground()
         self.player = Player()
 
+        # Add Instruction Groups to self
         self.add(self.background)
         self.add(self.enemies)
         self.add(self.foreground)
         self.add(self.player)
         self.add(self.PM)
+        self.add(self.dmg_rect)
+
 
     def include_audio(self, audio_controller):
         self.audio_controller = audio_controller
@@ -255,7 +297,7 @@ class Handler(InstructionGroup):
         remove_list = []
         for e in self.enemy_data:
             if e[0] <= time:
-                E = Enemy(e[1], audio_callback=self.play_enemy_sound, hurt_player_callback=self.player.decrement_health)
+                E = Enemy(e[1], audio_callback=self.play_enemy_sound, hurt_player_callback=self.player.decrement_health, dmg_rect_on_hit_callback=self.dmg_rect.on_hit)
                 self.enemies.add(E)
                 #self.add(E)
                 remove_list.append(e)

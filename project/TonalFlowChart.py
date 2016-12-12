@@ -16,6 +16,12 @@ class Chord:
 
     def get_chord_intervals(self):
         return Chord.chordIntervalSize[self.chord_type]
+
+    def get_chord_name(self):
+        return self.chord_name
+
+    def get_chord_type(self):
+        return self.chord_type
 '''
 Enumeration of chord types
 '''
