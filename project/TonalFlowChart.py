@@ -130,7 +130,7 @@ class TonalFlowChart:
                          4: (1, 2, 5),\
                          5: (1, 7, 6),\
                          6: (4, 2),\
-                         7: (1)}
+                         7: [1]}
 
     # nextChordMapMinor = {Chords.MAJOR_SEVEN: (Chords.MAJOR_THREE),\
     #                      Chords.MAJOR_THREE: (Chords.MAJOR_SIX, Chords.MINOR_FOUR),\
