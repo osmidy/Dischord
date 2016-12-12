@@ -80,7 +80,7 @@ class Enemy(InstructionGroup):
 
         self.size = np.array((200,380))*Window.height/600
 
-        self.speed = speed
+        self.speed = speed*3
 
         # Callback Functions
         self.hurt_player_callback = hurt_player_callback
@@ -137,7 +137,7 @@ class Enemy(InstructionGroup):
         self.resolvedPitches = []
 
         #TODO: these are example pitches; we need to add the pitches from the notes of chord...
-        self.seq = add_sound(self.dissonantPitches)
+        self.seq = add_sound(self.dissonantPitches, self.get_closeness)
 
         # Note Display
         self.ND = Note_Display(key, self.dissonantPitches, self.pos2D[0], self.pos2D[1]+s[1])
@@ -147,6 +147,10 @@ class Enemy(InstructionGroup):
         self.audio_callback = audio_callback
         self.add_sound = add_sound
         self.remove_sound = remove_sound
+
+    def get_closeness(self):
+        z = self.map(self.pos3D[2], 0, -D, 100, 0)
+        return z
 
     def lit(self):
         self.color.rgb = (0.4,0.4,1)

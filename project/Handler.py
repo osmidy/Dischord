@@ -34,8 +34,8 @@ import numpy as np
 
 #beat_per_sec
 bps = 10.0/9.0
-#data = [(0.0,0),(2.0,-250),(4.0,250),(6.0,-400),(10.0,0)]
-data = [(2*bps,0)]
+data = [(2*bps,0),(4*bps,-250),(6*bps,250),(8*bps,-400),(12*bps,0)]
+#data = [(2*bps,0)]
 
 class E_List(InstructionGroup):
     def __init__(self):

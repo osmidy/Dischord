@@ -147,8 +147,9 @@ class AudioController(object):
 
         self.occupied_channels = []
         self.sequencers = []
+        self.enemy_closeness_funcs = []
 
-    def add_enemy_sound(self, pitches):
+    def add_enemy_sound(self, pitches, get_enemy_closeness):
         next_open_channel = 0
         while next_open_channel in self.occupied_channels:
             next_open_channel += 1
@@ -159,6 +160,7 @@ class AudioController(object):
 
         seq = NoteSequencer(self.sched, self.synth, channel = next_open_channel, patch = (0, 40))
         self.sequencers.append(seq)
+        self.enemy_closeness_funcs.append(get_enemy_closeness)
         self.occupied_channels.append(next_open_channel)
         # base quarter note is 480
         rhythm = ( (120,pitches), (120+240+480,[0]), (120,pitches), (120+240+480*3,[0]) )
@@ -193,6 +195,12 @@ class AudioController(object):
     def on_update(self):
         if self.bg_track1.paused:
             self.bg_track1.play()
+
+        for i in xrange(len(self.sequencers)):
+            seq = self.sequencers[i]
+            closeness = int(self.enemy_closeness_funcs[i]())
+            self.synth.cc(seq.get_channel(),7,closeness)
+
         self.audio.on_update()
 
 

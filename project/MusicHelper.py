@@ -139,6 +139,6 @@ class Notes:
         tonic_pitch = key.get_pitch()
         notes = []
         for i in xrange(7):
-            pitch = tonic_pitch + MusicHelper.scaleDegTonicDistance[i+1]
+            pitch = tonic_pitch + MusicHelper.scaleDegreeTonicDistance[i+1]
             notes.append(Notes.pitch_to_note(pitch,key))
         return notes
