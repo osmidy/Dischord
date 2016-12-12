@@ -86,13 +86,26 @@ class Notes:
 
         # See if key is sharp or flat
         isSharp = False
+        isFlat = False
         if "#" in key.get_name():
             isSharp = True
+        elif "b" in key.get_name():
+            isFlat = True
 
         basePitch = pitch % 12
         if isSharp and basePitch in pitchToNoteSharp:
             return pitchToNoteSharp[basePitch]
-        elif basePitch in pitchToNoteFlat:
+        elif isFlat and basePitch in pitchToNoteFlat:
             return pitchToNoteFlat[basePitch]
         else:
-            return pitchToNoteNatural
+            return pitchToNoteNatural[basePitch]
+
+    @staticmethod
+    def get_notes_in_key(key):
+        tonic_pitch = key.get_pitch()
+        notes = []
+        for i in xrange(7):
+            pitch = tonic_pitch + MusicHelper.scaleDegTonicDistance[i+1]
+            notes.append(Notes.pitch_to_note(pitch,key))
+        return notes
+

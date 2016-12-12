@@ -135,7 +135,7 @@ class Enemy(InstructionGroup):
         self.dissonantPitches = self.chord.pitches
 
         #TODO: these are example pitches; we need to add the pitches from the notes of chord...
-        self.seq = add_sound((69,74,78))
+        self.seq = add_sound(self.dissonantPitches)
 
         # Callback Functions
         self.audio_callback = audio_callback

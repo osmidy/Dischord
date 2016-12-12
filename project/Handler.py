@@ -31,9 +31,10 @@ from kivy.config import Config
 from random import random, randint, choice
 import numpy as np
 
-
-data = [(0.0,0),(2.0,-250),(4.0,250),(6.0,-400),(10.0,0)]
-#data = [(0.0,0)]
+#beat_per_sec
+bps = 10.0/9.0
+#data = [(0.0,0),(2.0,-250),(4.0,250),(6.0,-400),(10.0,0)]
+data = [(2*bps,0)]
 
 class E_List(InstructionGroup):
     def __init__(self):
@@ -132,6 +133,8 @@ class Damage_Rect(InstructionGroup):
 class Handler(InstructionGroup):
     def __init__(self):
         super(Handler, self).__init__()
+
+        self.key = Notes.C
         
         self.audio_controller = None
 
@@ -152,7 +155,7 @@ class Handler(InstructionGroup):
 
         self.enemies = E_List()
         self.background = Background()
-        self.foreground = Foreground()
+        self.foreground = Foreground(self.key)
         self.player = Player()
 
         # Add Instruction Groups to self

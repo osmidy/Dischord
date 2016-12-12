@@ -73,6 +73,7 @@ class Button(InstructionGroup):
 
     def get_note_texture(self, note):
         name = note.get_name()
+        print name
         return Image(source='../data/'+name+'.png').texture
 
     def enable(self):
@@ -92,7 +93,7 @@ class Button(InstructionGroup):
 
 
 class Foreground(InstructionGroup):
-    def __init__(self):
+    def __init__(self, key):
         super(Foreground, self).__init__()
 
         w = Window.width
@@ -101,6 +102,9 @@ class Foreground(InstructionGroup):
         # Draw Wall
         self.wall = Wall()
         self.add(self.wall)
+
+        # key of game
+        self.key = key
 
         # Draw Buttons
         self.buttons = []
@@ -114,9 +118,11 @@ class Foreground(InstructionGroup):
         colors = [(.22, .22, 1.), (.22, 1., .22), (1., 1., .22), (1., .22, .22)]
 
         for i in xrange(num_buttons):
-        	b = Button(button_y_positions[i], h-5, Color(*colors[i]))
-        	self.buttons.append(b)
-        	self.add(b)
+            notes = Notes.get_notes_in_key(self.key)
+            note = choice(notes)
+            b = Button(button_y_positions[i], h-5, Color(*colors[i]), note=note)
+            self.buttons.append(b)
+            self.add(b)
 
     def on_update(self, dt):
         # As of now, should never be removed

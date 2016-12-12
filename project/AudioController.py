@@ -154,10 +154,14 @@ class AudioController(object):
             next_open_channel += 1
         print next_open_channel
 
-        seq = NoteSequencer(self.sched, self.synth, channel = next_open_channel, patch = (0, 35))
+        #DELETE THIS LINE... IT IS NOT NECESSARY AND IS FOOLERY :P
+        pitches = np.array(pitches)+24  # adds an octave to pitches
+
+        seq = NoteSequencer(self.sched, self.synth, channel = next_open_channel, patch = (0, 40))
         self.sequencers.append(seq)
         self.occupied_channels.append(next_open_channel)
-        rhythm = ( (240,pitches), (240,[0]), (240,pitches), (240*2*4,[0]) )
+        # base quarter note is 480
+        rhythm = ( (120,pitches), (120+240+480,[0]), (120,pitches), (120+240+480*3,[0]) )
         seq.set_notes(rhythm, True)
         seq.start()
 
@@ -187,6 +191,8 @@ class AudioController(object):
 
     # needed to update audio
     def on_update(self):
+        if self.bg_track1.paused:
+            self.bg_track1.play()
         self.audio.on_update()
 
 
