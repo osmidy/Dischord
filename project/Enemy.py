@@ -80,7 +80,7 @@ class Enemy(InstructionGroup):
 
         self.size = np.array((200,380))*Window.height/600
 
-        self.speed = speed*9
+        self.speed = speed*3
 
         # Callback Functions
         self.hurt_player_callback = hurt_player_callback
@@ -210,7 +210,7 @@ class Enemy(InstructionGroup):
 
         idx = self.dissonantPitches.index(minPitch)
         comparisonPitches = list(self.dissonantPitches)
-        comparisonPitches[idx] = minPitch
+        comparisonPitches[idx] = pitch
 
         playbackPitches = comparisonPitches
         killed = False
