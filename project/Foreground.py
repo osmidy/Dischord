@@ -118,7 +118,7 @@ class Foreground(InstructionGroup):
         colors = [(.22, .22, 1.), (.22, 1., .22), (1., 1., .22), (1., .22, .22)]
 
         for i in xrange(num_buttons):
-            notes = Notes.get_notes_in_key(self.key)
+            notes = Note.get_notes_in_key(self.key)
             note = choice(notes)
             b = Button(button_y_positions[i], h-5, Color(*colors[i]), note=note)
             self.buttons.append(b)

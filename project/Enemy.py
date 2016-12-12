@@ -44,6 +44,7 @@ class Note_Display(InstructionGroup):
         self.notes = []
         for i in xrange(self.num_notes):
             chordName = MusicHelper.get_scale_name(key, self.chord[i])
+            print chordName
             texture = self.get_texture(chordName)
             self.add( CBRectangle(texture=texture, cbpos=(x[i],y_top+5), cbsize=(25,25)) )
 
