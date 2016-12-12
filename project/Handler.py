@@ -14,6 +14,7 @@ from Background import *
 from Foreground import *
 from Player import *
 from MusicHelper import *
+from TonalFlowChart import *
 from AudioController import *
 from leap.LeapHelper import *
 from LeapHand import *
@@ -60,16 +61,16 @@ class ProgressionManager(InstructionGroup):
     def __init__(self):
         super(ProgressionManager, self).__init__()
 
-        # list of tuples: (chord, display_rect)
+        # list of tuples: (scale_degree, display_rect)
         self.progression = []
         super(ProgressionManager, self).add(Color(0.6,0.6,0.8))
 
-    def add(self, chord):
+    def add(self, scale_degree):
         x = 50 + len(self.progression)*50
         y = Window.height - 87
-        txt = self.get_chord_texture(chord)
+        txt = self.get_chord_texture(scale_degree)
         display_rect = Rectangle( texture=txt, pos=(x,y) , size=(45,45) )
-        tup = (chord, display_rect)
+        tup = (scale_degree, display_rect)
         super(ProgressionManager, self).add(display_rect)
         self.progression.append(tup)
 
@@ -78,15 +79,20 @@ class ProgressionManager(InstructionGroup):
             super(ProgressionManager, self).remove(c[1])
         self.progression[:] = []
 
-    def get_chord_texture(self, chord):
+    def get_chord_texture(self, scale_degree):
         data_path = "../data_path/"
 
+        romanNumeral = Chord.majorKeyRomanNumerals[scale_degree]
+
         #get string with name of chord
-        name = data_path + chord.get_chord_name()
+        name = data_path + romanNumeral
         if name.isupper():
             return Image(source=name+'.png').texture
         else:
             return Image(source=name.upper()+'_.png').texture
+
+    def length(self):
+        return len(self.progression)
 
     def on_update(self, dt):
         return True
@@ -127,11 +133,11 @@ class Damage_Rect(InstructionGroup):
 
         return True
 
-
-
 class Handler(InstructionGroup):
     def __init__(self):
         super(Handler, self).__init__()
+
+        self.key = Notes.C
         
         self.audio_controller = None
 
@@ -139,6 +145,7 @@ class Handler(InstructionGroup):
         self.enemy_data = data
 
         # Handles and displays progressions near top of screen
+        self.tonalFlowChart = TonalFlowChart()
         self.PM = ProgressionManager()
 
         # Displays Damage rectangle when player is hit
@@ -283,9 +290,21 @@ class Handler(InstructionGroup):
                 return
 
             note = active_button.get_note()
-            self.target.on_hit(note.get_pitch())
+            enemyKilled = self.target.on_hit(note.get_pitch())
             active_button.disable()
             self.player.unarm_weapon()
+
+            if enemyKilled:
+                chord = self.target.resolvedPitches
+                chordType, root = Chord.get_chord_type(chord)
+                scaleDeg = MusicHelper.get_scale_degree(self.key, root)
+                
+                if not self.tonalFlowChart.is_valid_progression(scaleDeg):
+                    self.PM.clear()
+                self.PM.add(scaleDeg)
+
+                # Increment player streak
+                self.player.set_score_mult(self.PM.length())
 
     def ccw(self, A,B,C):
         return (C[1]-A[1]) * (B[0]-A[0]) > (B[1]-A[1]) * (C[0]-A[0])
@@ -299,7 +318,7 @@ class Handler(InstructionGroup):
         remove_list = []
         for e in self.enemy_data:
             if e[0] <= time:
-                E = Enemy(e[1], audio_callback=self.play_enemy_sound, hurt_player_callback=self.player.decrement_health, dmg_rect_on_hit_callback=self.dmg_rect.on_hit, add_sound=self.audio_controller.add_enemy_sound, remove_sound=self.audio_controller.remove_enemy_sound)
+                E = Enemy(e[1], self.key, audio_callback=self.play_enemy_sound, hurt_player_callback=self.player.decrement_health, dmg_rect_on_hit_callback=self.dmg_rect.on_hit, add_sound=self.audio_controller.add_enemy_sound, remove_sound=self.audio_controller.remove_enemy_sound)
                 self.enemies.add(E)
                 remove_list.append(e)
                 

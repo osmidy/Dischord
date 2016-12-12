@@ -33,24 +33,27 @@ class Note_Display(InstructionGroup):
         super(Note_Display, self).__init__()
 
         self.key = key
+
+        # Group of midi pitches
         self.chord = chord
 
-        self.num_notes = 3
+        self.num_notes = len(chord)
         #d = 40
         x = np.linspace(x_center-d,x_center+d,self.num_notes)
 
         self.notes = []
         for i in xrange(self.num_notes):
-            texture = self.get_texture(chord)
+            chordName = MusicHelper.get_scale_name(key, self.chord[i])
+            texture = self.get_texture(chordName)
             self.add( CBRectangle(texture=texture, cbpos=(x[i],y_top+5), cbsize=(25,25)) )
 
     def add(self, note):
         super(Note_Display, self).add(note)
         self.notes.append(note)
 
-    def get_texture(self, chord):
+    def get_texture(self, name):
         #implement choosing proper image from chord/notes (how do I do this?)
-        return Image(source='../data/A.png').texture
+        return Image(source="../data/" + name + ".png").texture
 
     def on_update(self, dt, x_center, y_top):
         #d = 40
@@ -105,10 +108,6 @@ class Enemy(InstructionGroup):
         self.add(self.color)
         self.add(self.cbrect)
 
-        # Note Display
-        self.ND = Note_Display(key, None, self.pos2D[0], self.pos2D[1]+s[1])
-        self.add(self.ND)
-
         # self.color = Color(1,0.1,0.1)
         # s = self.size*self.scale_with_z()
         # self.cbrect = CBRectangle( cbpos=(self.pos2D[0],self.pos2D[1]), cbsize=(s[0],s[1]) )
@@ -134,8 +133,15 @@ class Enemy(InstructionGroup):
         self.chord = Chord(key)
         self.dissonantPitches = self.chord.pitches
 
+        # Assigned when this Enemy is killed
+        self.resolvedPitches = []
+
         #TODO: these are example pitches; we need to add the pitches from the notes of chord...
         self.seq = add_sound((69,74,78))
+
+        # Note Display
+        self.ND = Note_Display(key, self.dissonantPitches, self.pos2D[0], self.pos2D[1]+s[1])
+        self.add(self.ND)
 
         # Callback Functions
         self.audio_callback = audio_callback
@@ -207,6 +213,7 @@ class Enemy(InstructionGroup):
         killed = False
 
         if Chord.is_valid_chord(self.key, comparisonPitches):
+            self.resolvedPitches = comparisonPitches
             self.is_dead = True
             killed = True
 
