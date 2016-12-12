@@ -40,7 +40,7 @@ bps = 10.0/9.0
 data = []
 for i in xrange(2,60,2):
     time = i*bps
-    num_enemies = randint(0,2)
+    num_enemies = randint(0,1)
     existing_x_positions = []
     while num_enemies > 0:
         x_pos = randint(-600,600)
@@ -246,7 +246,7 @@ class Handler(InstructionGroup):
     def crosshair_on_enemy(self):
         # TODO: find points in some bounding box of the enemy
         crosshair = self.player.leftHand.get_pos()
-        del_x = crosshair[0] - Window.width/2
+        del_x = crosshair[0] #- Window.width/2
         del_y = crosshair[1]
         A = (Window.width/2, -10000) # 
         B = (Window.width/2 + 3*del_x, 3*del_y)
