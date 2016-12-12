@@ -35,6 +35,7 @@ class Player(InstructionGroup):
         super(Player, self).__init__()
 
         self.score = 0
+        self.score_mult = 1
 
         self.health = 100
 
@@ -108,7 +109,10 @@ class Player(InstructionGroup):
         return True
 
     def score_up(self):
-        self.score += 10
+        self.score += 10 * self.score_mult
+
+    def set_score_mult(self, size):
+        self.score_mult = size / 5 + 1
 
     def get_health(self):
         return self.health

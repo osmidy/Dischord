@@ -8,7 +8,8 @@ class MusicHelper(object):
 
     octave = 12
 
-    scaleDegTonicDistance = {1: 0,\
+    # Distance of pitch from tonic of the key
+    scaleDegreeTonicDistance = {1: 0,\
                                 2: 2,\
                                 3: 4,\
                                 4: 5,\
@@ -24,6 +25,17 @@ class MusicHelper(object):
                                         9: 6,\
                                         11: 7}
 
+    @staticmethod
+    def get_scale_degree(key, pitch):
+        tonic = key.get_pitch()
+        dist = pitch - tonic
+        return MusicHelper.tonicDistanceScaleDegreeMap[dist]
+
+    @staticmethod
+    def get_scale_name(key, pitch):
+        note = Note.pitch_to_note(pitch, key)
+        return note.get_name()
+
 '''
 Represenation of musical notes/midi pitches
 '''
@@ -37,6 +49,28 @@ class Note:
 
     def get_name(self):
         return self.note_name
+
+    '''
+    Get harmonically correct form of the Note for pitch in the given key
+    '''
+    @staticmethod
+    def pitch_to_note(pitch, key):
+        pitchToNoteSharp = {0: Notes.B_SHARP, 3: Notes.D_SHARP, 5: Notes.E_SHARP, 6: Notes.F_SHARP, 8: Notes.G_SHARP, 10: Notes.A_SHARP}
+        pitchToNoteNatural = {0: Notes.C, 2: Notes.D, 4: Notes.E, 5: Notes.F, 7: Notes.G, 9: Notes.A, 11: Notes.B}
+        pitchToNoteFlat = {1: Notes.D_FLAT, 3: Notes.E_FLAT, 4: Notes.F_FLAT, 6: Notes.G_FLAT, 8: Notes.A_FLAT, 10: Notes.B_FLAT, 11: Notes.C_FLAT}
+
+        # See if key is sharp or flat
+        isSharp = False
+        if "#" in key.get_name():
+            isSharp = True
+
+        basePitch = pitch % 12
+        if isSharp and basePitch in pitchToNoteSharp:
+            return pitchToNoteSharp[basePitch]
+        elif basePitch in pitchToNoteFlat:
+            return pitchToNoteFlat[basePitch]
+        else:
+            return pitchToNoteNatural[basePitch]
 
 '''
 Enumeration of note types
@@ -108,4 +142,3 @@ class Notes:
             pitch = tonic_pitch + MusicHelper.scaleDegTonicDistance[i+1]
             notes.append(Notes.pitch_to_note(pitch,key))
         return notes
-
