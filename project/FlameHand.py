@@ -9,6 +9,8 @@ class FlameHand(LeapHand):
     def __init__(self):
         super(FlameHand, self).__init__()
 
+        self.pos = (600, .3 * Window.height)
+
         # Particle is added to the main widget in Game at runtime
         self.flameParticle = ParticleSystem("../particle/flame.pex")
         self.flameParticle.emitter_x = self.pos[0]
@@ -18,7 +20,7 @@ class FlameHand(LeapHand):
 
         # taken from ../particle/flame.pex -> start_color
         self.color = (1, .85, .85)
-        self.alpha = .4
+        self.alpha = .2
 
         self.is_armed = False
         self.selectedButton = None
@@ -44,7 +46,9 @@ class FlameHand(LeapHand):
     def set_brightness(self):
         if self.hand:
             val = self.hand.palm_normal.y + 1.0
-            self.alpha = .4 + val/2.0
+            print val
+            self.alpha = .2 + val/2.0
+            self.update_color()
 
     def brigten_flame(self):
         self.alpha = 1.0
