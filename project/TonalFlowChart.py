@@ -134,7 +134,7 @@ class TonalFlowChart:
     Note: since the one chord can go to anything, this is left out of the mappings.
     We explicitly check for this case in the functions of the class.
     '''
-    nextChordMapMajor = {1:(2, 3, 4, 5, 6, 7),\
+    nextChordMapMajor = {1: (2, 3, 4, 5, 6, 7),\
                          2: (5, 7),\
                          3: (6, 7),\
                          4: (1, 2, 5),\

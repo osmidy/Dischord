@@ -38,7 +38,7 @@ bps = 10.0/9.0
 #data = [(2*bps,0),(2*bps,-500),(4*bps,500),(4*bps,-250),(6*bps,250),(8*bps,-400),(12*bps,0)]
 #data = [(2*bps,0)]
 data = []
-for i in xrange(2,60,2):
+for i in xrange(2,60,4):
     time = i*bps
     num_enemies = randint(0,1)
     existing_x_positions = []
@@ -132,7 +132,7 @@ class Damage_Rect(InstructionGroup):
         self.was_hit = False
         self.isfading = False
 
-        self.damage_rect = Rectangle(pos=(0,0), size=(Window.width,Window.height))
+        self.damage_rect = Rectangle(pos=(0,0), size=(Subwindow.width(),Window.height))
         self.damage_color = Color(rgba=(1,0,0,0.0))
 
         self.add(self.damage_color)
@@ -161,6 +161,18 @@ class Damage_Rect(InstructionGroup):
 
         return True
 
+class Sight_Line(InstructionGroup):
+    def __init__(self):
+        super(Sight_Line, self).__init__()
+
+        pts = [200 + random() * 200 for i in range(16)]
+        self.line = Line(points=pts, width=3)
+        self.add(Color(1,1,1))
+        self.add(self.line)
+
+    def on_update(self, dt):
+        return True
+
 class Handler(InstructionGroup):
     def __init__(self):
         super(Handler, self).__init__()
@@ -171,6 +183,8 @@ class Handler(InstructionGroup):
 
         self.time = 0.0
         self.enemy_data = data
+
+        self.sightLine = Sight_Line()
 
         # Handles and displays progressions near top of screen
         self.tonalFlowChart = TonalFlowChart()
@@ -196,7 +210,9 @@ class Handler(InstructionGroup):
         self.add(self.foreground)
         self.add(self.player)
         self.add(self.PM)
+        self.add(self.sightLine)
         self.add(self.dmg_rect)
+
 
 
     def include_audio(self, audio_controller):
@@ -217,9 +233,13 @@ class Handler(InstructionGroup):
             self.remove(o)
 
         # Reset any disabled buttons if valid to do so
+        for btn in self.foreground.buttons:
+            btn.on_update(dt)
+
         if not self.player.is_attacking():
             for btn in self.foreground.buttons:
-                btn.enable()
+                pass
+                #btn.enable()
 
         self.crosshair_on_enemy()
 
@@ -234,7 +254,7 @@ class Handler(InstructionGroup):
         pos = LeapHelper.position_as_pixels(hand)
         
         def checkBounds(x, y):
-            return 0 <= x and x <= Window.width and 0 <= y and y <= Window.height
+            return 0 <= x and x <= Subwindow.width() and 0 <= y and y <= Window.height
             
         if not checkBounds(*pos):
             currentHand.release_flame()
@@ -250,10 +270,12 @@ class Handler(InstructionGroup):
     def crosshair_on_enemy(self):
         # TODO: find points in some bounding box of the enemy
         crosshair = self.player.leftHand.get_pos()
-        del_x = crosshair[0] #- Window.width/2
-        del_y = crosshair[1]
-        A = (Window.width/2, -10000) # 
-        B = (Window.width/2 + 3*del_x, 3*del_y)
+        del_x = crosshair[0] - Subwindow.width()/2
+        del_y = crosshair[1] + 100000000
+        A = (Subwindow.width()/2, -100000000)
+        B = (Subwindow.width()/2 + 3*del_x, 3*del_y)
+        self.sightLine.line.points = ((50,50),(500,500)) #(A[0],A[1],B[0],B[1])
+
 
         self.target = None
         sorted_enemies = sorted(self.enemies.enemies, key = lambda x: x.cbrect.pos[1])
@@ -325,7 +347,7 @@ class Handler(InstructionGroup):
             if enemyKilled:
                 chord = self.target.resolvedPitches
                 chordType, root = Chord.get_chord_type(self.key, chord)
-                scaleDeg = MusicHelper.get_scale_degree(self.key, root)
+                scaleDeg = root #MusicHelper.get_scale_degree(self.key, root)
                 
                 if not self.tonalFlowChart.is_valid_progression(scaleDeg, self.PM.prev_scale_degree):
                     self.PM.clear()

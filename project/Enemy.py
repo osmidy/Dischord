@@ -263,7 +263,7 @@ class Enemy(InstructionGroup):
     def convert_to_pos2D(self, pos3D):
         #D = 500.0
         Y = Window.height*0.68
-        X = Window.width
+        X = Subwindow.width()
         x = pos3D[0]
         y = pos3D[1]
         z = pos3D[2]
@@ -272,9 +272,7 @@ class Enemy(InstructionGroup):
         j = Y - Y*np.power(1.002,z)
         c = self.map(j, 0, Y, 1, 1/3)
         i = self.map(x+X/2, 0, X, X/2*(1-c), X/2*(1+c))
-
         return (i,j)
-
 
     def map(self, x, in_min, in_max, out_min, out_max):
         return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
